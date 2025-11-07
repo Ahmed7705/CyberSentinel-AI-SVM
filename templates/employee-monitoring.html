@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Monitoring · CyberSentinel AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .cyber-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .ai-user-btn {
+            min-width: 70px;
+            justify-content: center;
+            white-space: nowrap;
+            padding: 0.25rem 0.55rem;
+            border-radius: 14px;
+            font-size: 0.68rem;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.15);
+        }
+
+        .ai-user-btn i {
+            font-size: 0.75rem;
+        }
+
+        .view-files-btn {
+            border-color: var(--secondary);
+            color: var(--secondary);
+            min-width: 65px;
+        }
+
+        .view-files-btn:hover {
+            background: var(--secondary);
+            color: #000;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.35rem;
+            justify-content: flex-end;
+        }
+
+        .page-header {
+            background: var(--surface);
+            padding: 2rem 0;
+            margin-top: var(--nav-height);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem 0 3rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            border-radius: 18px;
+            padding: 1.5rem;
+            background: linear-gradient(145deg, rgba(0, 255, 136, 0.12), rgba(0, 217, 245, 0.05));
+            border: 1px solid rgba(61, 245, 198, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .metric-card .label {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        .metric-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .risk-section {
+            margin-top: 2rem;
+        }
+
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .main-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .monitoring-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .monitoring-toolbar .form-control {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            min-width: 200px;
+        }
+
+        .monitoring-toolbar .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        .monitor-table {
+            width: 100%;
+            min-width: 980px;
+            border-collapse: collapse;
+        }
+
+        .monitor-table thead th {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 0.55rem 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .monitor-table tbody td {
+            padding: 0.65rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        .monitor-table tbody tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .monitor-table thead th:last-child,
+        .monitor-table tbody td:last-child {
+            text-align: right;
+            width: 120px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.75rem;
+        }
+
+        .status-pill {
+            padding: 0.35rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .status-pill.high {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .status-pill.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-pill.low {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--primary);
+        }
+
+        .timeline {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .timeline-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .timeline-content {
+            margin-top: 0.3rem;
+            font-size: 0.95rem;
+        }
+
+        .ai-summary {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid rgba(61, 245, 198, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-summary h3 {
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .upload-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .upload-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .upload-item .meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .upload-item .meta span {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .upload-badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+
+        .upload-badge.low {
+            color: var(--primary);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        .upload-badge.medium {
+            color: var(--warning);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .upload-badge.high {
+            color: var(--danger);
+            border-color: rgba(239, 68, 68, 0.4);
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 7, 12, 0.75);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: min(600px, 90vw);
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-card header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-card header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .modal-card header button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-card .modal-body {
+            padding: 1rem 1.5rem;
+            overflow-y: auto;
+        }
+
+        .modal-file-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .modal-file-row:last-child {
+            border-bottom: none;
+        }
+
+        .modal-file-row span {
+            font-size: 0.85rem;
+        }
+
+        .modal-file-row .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .modal-file-row .modal-actions a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            border: 1px solid var(--primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .modal-file-row .modal-actions a:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .notification-center {
+            position: fixed;
+            top: 6rem;
+            right: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 1500;
+            max-width: 360px;
+        }
+
+        .alert-toast {
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-left: 4px solid var(--danger);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 1rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .alert-toast header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .alert-toast header strong {
+            color: var(--danger);
+            letter-spacing: 0.03em;
+        }
+
+        .alert-toast button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .alert-toast p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        @media (max-width: 1024px) {
+            .insight-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .page-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .monitoring-toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ai-user-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cyber-container">
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel
+                </a>
+
+                <div class="nav-links">
+                    <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('admin.alerts') }}" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        Alerts
+                    </a>
+                    <a href="{{ url_for('admin.employee_monitoring') }}" class="nav-link active">
+                        <i class="fas fa-user-shield"></i>
+                        Employee Monitoring
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                    <a href="{{ url_for('admin.ai_analyst') }}" class="nav-link">
+                        <i class="fas fa-brain"></i>
+                        AI Analyst
+                    </a>
+                </div>
+
+                <div class="nav-actions">
+                    <a href="{{ url_for('auth.logout') }}" class="cyber-btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <header class="page-header">
+            <div class="page-content">
+                <div>
+                    <h1 class="page-title">Employee Monitoring</h1>
+                    <p class="page-subtitle">
+                        Track user behavior, open alerts, and AI insights across the organization in real time.
+                    </p>
+                </div>
+                <a href="{{ url_for('admin.alerts') }}" class="cyber-btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Alerts
+                </a>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <div class="container">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <span class="label">Total Users</span>
+                        <span class="value">{{ overall_metrics.total_users }}</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Active Accounts</span>
+                        <span class="value">{{ overall_metrics.active_users }}</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">Open Alerts</span>
+                        <span class="value" style="color: var(--warning);">
+                            {{ overall_metrics.open_alerts }}
+                        </span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="label">High/Critical Alerts</span>
+                        <span class="value" style="color: var(--danger);">
+                            {{ overall_metrics.high_alerts }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="ai-summary">
+                    <h3><i class="fas fa-robot"></i> AI Summary</h3>
+                    <p style="white-space: pre-line;">{{ ai_summary }}</p>
+                </div>
+
+                <section class="risk-section">
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-users"></i>
+                                User Risk Overview
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="monitoring-toolbar">
+                                <input type="search" id="userSearch" class="form-control" placeholder="Search by name or username...">
+                                {% set roles = user_profiles | map(attribute='role') | list | unique %}
+                                <select id="roleFilter" class="form-control">
+                                    <option value="">All Roles</option>
+                                    {% for role in roles %}
+                                    <option value="{{ role }}">{{ role|capitalize }}</option>
+                                    {% endfor %}
+                                </select>
+                                {% set departments = user_profiles | map(attribute='department') | list | unique %}
+                                <select id="deptFilter" class="form-control">
+                                    <option value="">All Departments</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept }}">{{ dept or 'Unassigned' }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="table-container">
+                                <table class="monitor-table" id="monitorTable">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Department</th>
+                                            <th>High Alerts</th>
+                                            <th>Open Alerts</th>
+                                            <th>Activity (7d)</th>
+                                            <th>Last Activity</th>
+                                            <th>AI Insight</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in user_profiles %}
+                                        <tr data-role="{{ user.role }}" data-department="{{ user.department }}">
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                    <div class="user-avatar">{{ user.full_name[0] if user.full_name else user.username[0] }}</div>
+                                                    <div>
+                                                        <div style="font-weight: 600;">{{ user.full_name or user.username }}</div>
+                                                        <small style="color: var(--text-muted);">@{{ user.username }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ user.role|capitalize }}</td>
+                                            <td>{{ user.department or 'Unassigned' }}</td>
+                                            <td>
+                                                <span class="status-pill {{ 'high' if (user.high_alerts or 0) else 'low' }}">{{ user.high_alerts or 0 }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="status-pill {{ 'high' if (user.open_alerts or 0) else 'low' }}">{{ user.open_alerts or 0 }}</span>
+                                            </td>
+                                            <td>{{ user.activity_week or 0 }}</td>
+                                            <td>{{ user.last_activity_at or '—' }}</td>
+                                            <td>
+                                                <div class="table-actions">
+                                                    <button class="cyber-btn btn-outline btn-sm ai-user-btn"
+                                                        data-username="{{ user.username }}"
+                                                        data-fullname="{{ user.full_name or user.username }}"
+                                                        data-department="{{ user.department or 'Unassigned' }}"
+                                                        data-high="{{ user.high_alerts or 0 }}"
+                                                        data-open="{{ user.open_alerts or 0 }}">
+                                                        <i class="fas fa-sparkles"></i>
+                                                        Ask AI
+                                                    </button>
+                                                    <button type="button" class="cyber-btn btn-outline btn-sm view-files-btn"
+                                                        data-user-id="{{ user.id }}"
+                                                        data-fullname="{{ user.full_name or user.username }}">
+                                                        <i class="fas fa-folder-open"></i>
+                                                        Files
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="8" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                                No employee data available.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="insight-grid">
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-bell"></i>
+                                Recent Alerts
+                            </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="timeline">
+                                    {% for alert in recent_alerts %}
+                                    <li class="timeline-item">
+                                        <div class="timeline-time">{{ alert.created_at }}</div>
+                                        <div class="timeline-content">
+                                            <strong>{{ alert.alert_type }}</strong><br>
+                                            <span style="color: var(--text-muted); font-size: 0.85rem;">
+                                                {{ alert.full_name or alert.username or 'Unknown user' }}
+                                            </span><br>
+                                            <span class="status-pill {{ 'high' if alert.risk_level in ['critical','high'] else 'medium' if alert.risk_level == 'medium' else 'low' }}">
+                                                {{ alert.risk_level|capitalize }} · {{ '%.2f'|format(alert.risk_score) }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                    {% else %}
+                                    <li class="timeline-item" style="text-align: center; color: var(--text-muted);">
+                                        No alerts recorded.
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-network-wired"></i>
+                                Recent Activity
+                            </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="timeline">
+                                    {% for activity in recent_activity %}
+                                    <li class="timeline-item">
+                                        <div class="timeline-time">{{ activity.timestamp }}</div>
+                                        <div class="timeline-content">
+                                            <strong>{{ activity.full_name or activity.username }}</strong>
+                                            <div style="font-size: 0.85rem; color: var(--text-muted);">
+                                                {{ activity.event_type|replace('_', ' ') }} from {{ activity.device or 'N/A' }}
+                                            </div>
+                                        </div>
+                                    </li>
+                                    {% else %}
+                                    <li class="timeline-item" style="text-align: center; color: var(--text-muted);">
+                                        No recent activity logs.
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                Recent Uploads
+                            </div>
+                            </div>
+                            <div class="card-body">
+                                <ul class="upload-list">
+                                    {% for upload in recent_uploads %}
+                                    <li class="upload-item">
+                                        <div class="meta">
+                                            <strong>{{ upload.filename }}</strong>
+                                            <span>{{ upload.full_name or upload.username }} &middot; {{ upload.file_type|upper }} &middot; {{ (upload.file_size or 0) // 1024 }} KB</span>
+                                            <span>{{ upload.uploaded_at }}</span>
+                                        </div>
+                                        <span class="upload-badge {{ upload.risk_level or 'low' }}">
+                                            {{ (upload.risk_level or 'low')|capitalize }}
+                                        </span>
+                                    </li>
+                                    {% else %}
+                                    <li class="upload-item" style="justify-content: center;">
+                                        <span>No uploads logged yet.</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="cyber-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </div>
+                <p class="footer-description">
+                    Ac 2025 CyberSentinel AI Defense Platform | Advanced Threat Detection & Prevention System
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <div class="notification-center" id="liveAlerts"></div>
+
+    <div class="modal-backdrop" id="userFilesModal">
+        <div class="modal-card">
+            <header>
+                <h3 id="userFilesModalTitle">User Uploads</h3>
+                <button type="button" id="userFilesModalClose">&times;</button>
+            </header>
+            <div class="modal-body" id="userFilesModalBody">
+                <p>Loading uploads...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('cyberNav');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        const liveAlertsData = {{ recent_alerts | tojson | safe }};
+        const DISMISSED_ALERTS_KEY = 'cs_admin_dismissed_alerts';
+        const searchInput = document.getElementById('userSearch');
+        const roleFilter = document.getElementById('roleFilter');
+        const deptFilter = document.getElementById('deptFilter');
+        const tableRows = document.querySelectorAll('#monitorTable tbody tr');
+        const liveAlertsContainer = document.getElementById('liveAlerts');
+
+        function applyFilters() {
+            const searchTerm = (searchInput ? searchInput.value.toLowerCase() : '').trim();
+            const role = roleFilter ? roleFilter.value : '';
+            const dept = deptFilter ? deptFilter.value : '';
+
+            tableRows.forEach(row => {
+                const matchesSearch = searchTerm ? row.textContent.toLowerCase().includes(searchTerm) : true;
+                const matchesRole = role ? row.dataset.role === role : true;
+                const matchesDept = dept ? row.dataset.department === dept : true;
+                row.style.display = matchesSearch && matchesRole && matchesDept ? '' : 'none';
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+        if (roleFilter) {
+            roleFilter.addEventListener('change', applyFilters);
+        }
+        if (deptFilter) {
+            deptFilter.addEventListener('change', applyFilters);
+        }
+
+        const interactEndpoint = "{{ url_for('ai.interact_with_ai') }}";
+        const aiButtons = document.querySelectorAll('.ai-user-btn');
+        const aiSummaryContainer = document.querySelector('.ai-summary');
+        const viewFileButtons = document.querySelectorAll('.view-files-btn');
+        const filesModal = document.getElementById('userFilesModal');
+        const filesModalBody = document.getElementById('userFilesModalBody');
+        const filesModalTitle = document.getElementById('userFilesModalTitle');
+        const filesModalClose = document.getElementById('userFilesModalClose');
+
+        function closeFilesModal() {
+            if (filesModal) {
+                filesModal.classList.remove('active');
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 KB';
+            const kb = bytes / 1024;
+            if (kb > 1024) {
+                return `${(kb / 1024).toFixed(2)} MB`;
+            }
+            return `${Math.ceil(kb)} KB`;
+        }
+
+        if (filesModalClose) {
+            filesModalClose.addEventListener('click', closeFilesModal);
+        }
+        if (filesModal) {
+            filesModal.addEventListener('click', (event) => {
+                if (event.target === filesModal) {
+                    closeFilesModal();
+                }
+            });
+        }
+
+        function loadDismissedAlerts() {
+            try {
+                return JSON.parse(localStorage.getItem(DISMISSED_ALERTS_KEY)) || [];
+            } catch (error) {
+                console.warn('Unable to load dismissed alerts', error);
+                return [];
+            }
+        }
+
+        function saveDismissedAlerts(ids) {
+            try {
+                localStorage.setItem(DISMISSED_ALERTS_KEY, JSON.stringify(ids));
+            } catch (error) {
+                console.warn('Unable to persist dismissed alerts', error);
+            }
+        }
+
+        function renderLiveAlerts(alerts) {
+            if (!liveAlertsContainer || !alerts?.length) {
+                return;
+            }
+            liveAlertsContainer.innerHTML = '';
+            const dismissed = new Set(loadDismissedAlerts().map(String));
+            alerts
+                .filter(alert => {
+                    const identifier = alert?.id ?? alert?.created_at;
+                    if (!identifier) {
+                        return true;
+                    }
+                    return !dismissed.has(String(identifier));
+                })
+                .slice(0, 4)
+                .forEach((alert) => {
+                const identifier = alert?.id ?? alert?.created_at ?? `${alert.alert_type}-${Math.random()}`;
+                const toast = document.createElement('div');
+                toast.className = 'alert-toast';
+                toast.innerHTML = `
+                    <header>
+                        <strong>${(alert.risk_level || 'high').toUpperCase()} ALERT</strong>
+                        <button type="button">&times;</button>
+                    </header>
+                    <p>${alert.alert_type} for ${alert.full_name || alert.username || 'Unknown user'}</p>
+                    <small style="color: var(--text-muted);">
+                        ${alert.created_at || ''} · Risk ${alert.risk_score ? Number(alert.risk_score).toFixed(2) : 'N/A'}
+                    </small>
+                `;
+                toast.querySelector('button').addEventListener('click', () => {
+                    toast.remove();
+                    const stored = loadDismissedAlerts();
+                    if (!stored.includes(String(identifier))) {
+                        stored.push(String(identifier));
+                        saveDismissedAlerts(stored);
+                    }
+                });
+                liveAlertsContainer.appendChild(toast);
+            });
+        }
+
+        if (Array.isArray(liveAlertsData) && liveAlertsData.length) {
+            renderLiveAlerts(liveAlertsData);
+        }
+
+        viewFileButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const userId = button.dataset.userId;
+                const fullname = button.dataset.fullname;
+                if (!filesModal || !userId) return;
+                filesModalTitle.textContent = `Uploads • ${fullname}`;
+                filesModalBody.innerHTML = '<p>Loading uploads...</p>';
+                filesModal.classList.add('active');
+
+                try {
+                    const response = await fetch(`/admin/api/users/${userId}/files`);
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Unable to fetch uploads');
+                    }
+                    if (!data.length) {
+                        filesModalBody.innerHTML = '<p>No files uploaded yet.</p>';
+                        return;
+                    }
+                    const rows = data.map(file => `
+                        <div class="modal-file-row">
+                            <div>
+                                <strong>${file.filename}</strong>
+                                <div style="font-size:0.75rem;color:var(--text-muted);">
+                                    ${(file.file_type || '').toUpperCase() || 'N/A'} · ${formatBytes(file.file_size)} · ${(file.risk_level || 'low').toUpperCase()}
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <span style="font-size:0.75rem;">${file.uploaded_at || ''}</span>
+                                <a href="/admin/files/${file.id}/download" target="_blank">
+                                    <i class="fas fa-download"></i> Download
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
+                    filesModalBody.innerHTML = rows;
+                } catch (error) {
+                    filesModalBody.innerHTML = '<p>Failed to load uploads.</p>';
+                    console.error(error);
+                }
+            });
+        });
+
+        aiButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const fullname = button.dataset.fullname;
+                const dept = button.dataset.department;
+                const high = button.dataset.high;
+                const open = button.dataset.open;
+                const prompt = `Provide a brief security assessment for ${fullname} (${dept}). They currently have ${high} high-risk alerts and ${open} open alerts. Recommend next steps for the SOC.`;
+
+                if (aiSummaryContainer) {
+                    aiSummaryContainer.innerHTML = `<h3><i class="fas fa-robot"></i> AI Summary</h3><p>Requesting insights for <strong>${fullname}</strong>...</p>`;
+                }
+
+                try {
+                    const response = await fetch(interactEndpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) throw new Error(data.error || 'AI request failed');
+
+                    if (aiSummaryContainer) {
+                        aiSummaryContainer.innerHTML = `<h3><i class="fas fa-robot"></i> AI Summary</h3><p style="white-space: pre-line;">${data.response || 'No insight returned.'}</p>`;
+                    }
+                } catch (error) {
+                    if (aiSummaryContainer) {
+                        aiSummaryContainer.innerHTML = `<h3><i class="fas fa-robot"></i> AI Summary</h3><p>Unable to retrieve AI insight at this time.</p>`;
+                    }
+                    console.error(error);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

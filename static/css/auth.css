@@ -1,0 +1,29 @@
+.login-logo {
+  width: 72px;
+  filter: drop-shadow(0 0 12px rgba(61, 245, 198, 0.35));
+}
+
+.login-form .input-group-text {
+  background: rgba(61, 245, 198, 0.1);
+  border: none;
+  color: #3df5c6;
+}
+
+.login-form .form-control {
+  background: rgba(2, 18, 28, 0.8);
+  border: 1px solid rgba(61, 245, 198, 0.15);
+  color: #fff;
+}
+
+.login-form .form-control:focus {
+  border-color: rgba(61, 245, 198, 0.5);
+  box-shadow: 0 0 0 0.25rem rgba(61, 245, 198, 0.15);
+}
+
+.glass-panel {
+  border-radius: 18px;
+}
+
+.text-neon {
+  color: #3df5c6;
+}

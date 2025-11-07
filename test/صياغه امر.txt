@@ -1,0 +1,125 @@
+صياغة الدقيقة (التي تكتبها للـ AI) حتى يبدأ بتنفيذ كل شيء بشكل صحيح ومرتب:
+
+ما تكتبه للـ AI حرفيًا:
+
+أنشئ لي مشروع Flask باسم CyberSentinel-AI-SVM يحتوي على هذا الهيكل:
+
+CyberSentinel-AI-SVM/
+├── app.py
+├── config.py
+├── .env.example
+├── requirements.txt
+├── README.md
+│
+├── routes/
+│   ├── auth_routes.py
+│   ├── admin_routes.py
+│   ├── user_routes.py
+│   └── ai_routes.py
+│
+├── services/
+│   ├── auth_service.py
+│   ├── alert_service.py
+│   └── report_service.py
+│
+├── ai_engine/
+│   ├── data_preprocessor.py
+│   ├── isolation_forest.py
+│   ├── one_class_svm.py
+│   └── engine.py
+│
+├── database/
+│   ├── database.py
+│   ├── schema.sql
+│   └── sample_data.sql
+│
+├── templates/
+│   ├── base.html
+│   ├── login.html
+│   ├── admin-dashboard.html
+│   ├── user-dashboard.html
+│   ├── alerts.html
+│   ├── reports.html
+│   └── users.html
+│
+└── static/
+    ├── css/
+    │   ├── style.css
+    │   ├── auth.css
+    │   ├── dashboard.css
+    │   └── hacker-theme.css
+    ├── js/
+    │   ├── main.js
+    │   ├── auth.js
+    │   ├── dashboard.js
+    │   ├── ai-detection.js
+    │   └── charts.js
+    ├── images/
+    │   ├── logo.png
+    │   └── background.jpg
+    └── assets/
+        ├── bootstrap/
+        └── font-awesome/
+
+
+وأريد أن يحتوي المشروع على:
+
+config.py فيه إعدادات Flask وMySQL باستخدام flask_mysqldb.
+
+database/schema.sql هو قاعدة البيانات التي أعطيتك إياها سابقًا (مع الجداول والبيانات العشرية لكل جدول).
+
+database/database.py يتولى الاتصال بقاعدة البيانات.
+
+routes فيها Blueprints لكل جزء (auth/admin/user/ai) مع ربطها بـ app.py.
+
+services فيها منطق العمل (مثل login/logout، إنشاء تنبيه، إنشاء تقرير).
+
+ai_engine يحتوي على ملفات الذكاء الاصطناعي:
+
+data_preprocessor.py لتحليل السجلات وتحضيرها.
+
+isolation_forest.py و one_class_svm.py لتدريب النماذج.
+
+engine.py لتشغيل التحليل وتحديث الجداول في قاعدة البيانات.
+
+templates فيها واجهات HTML بتصميم عصري "Hacker Style" داكن وأنيق.
+
+static فيه ملفات CSS وJS مفصولة كما في الهيكل.
+
+requirements.txt يحتوي على:
+
+flask
+flask-mysqldb
+scikit-learn
+pandas
+numpy
+openai
+python-dotenv
+
+
+اجعل app.py هو نقطة التشغيل التي تسجل جميع Blueprints وتشغل السيرفر.
+
+ولا تنسَ إضافة .env.example يحتوي على:
+
+MYSQL_HOST=localhost
+MYSQL_USER=root
+MYSQL_PASSWORD=
+MYSQL_DB=cyber_sentinel_db
+HF_API_BASE=https://router.huggingface.co/v1
+HF_API_KEY=YOUR_HF_KEY_HERE
+SECRET_KEY=cybersentinel-secret
+
+
+أريد كل الملفات مملوءة بمحتوى عملي أساسي جاهز للتشغيل — ليس فارغًا.
+
+ملاحظات مهمة
+
+اطلب من الـ AI إنشاء المشروع دفعة واحدة، أو على دفعات (يبدأ بالـ backend ثم الواجهة).
+
+بعد توليد الملفات، شغّل:
+
+pip install -r requirements.txt
+python app.py
+
+
+يمكنك بعد ذلك فتح المتصفح على http://127.0.0.1:5000/ وسترى واجهة تسجيل الدخول.

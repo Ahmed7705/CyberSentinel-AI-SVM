@@ -1,0 +1,18 @@
+.fa-solid { font-style: normal; font-weight: 900; display: inline-block; }
+.fa-solid::before { display: inline-block; margin-right: 0.25rem; }
+.fa-shield-halved::before { content: '\1F6E1'; }
+.fa-arrow-right-from-bracket::before { content: '\21A6'; }
+.fa-robot::before { content: '\1F916'; }
+.fa-chart-line::before { content: '\1F4C8'; }
+.fa-bell::before { content: '\1F514'; }
+.fa-triangle-exclamation::before { content: '\26A0'; }
+.fa-users::before { content: '\1F465'; }
+.fa-terminal::before { content: '\2328'; }
+.fa-wave-square::before { content: '\223F'; }
+.fa-file-lines::before { content: '\1F4C4'; }
+.fa-download::before { content: '\2B07'; }
+.fa-satellite-dish::before { content: '\1F4E1'; }
+.fa-id-card::before { content: '\1F4C3'; }
+.fa-key::before { content: '\1F511'; }
+.fa-user::before { content: '\1F464'; }
+.fa-check::before { content: '\2713'; }

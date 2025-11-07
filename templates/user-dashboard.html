@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Workspace - CyberSentinel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #00ff88;
+            --info: #3b82f6;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --border-glow: rgba(0, 255, 136, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #eab308;
+            transform: translateY(-2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: var(--nav-height);
+            padding: 2rem;
+            max-width: 1800px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .card-header i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1400px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+        }
+
+        .action-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .file-upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+            transform: scale(1.02);
+        }
+
+        .file-upload-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* Uploaded Files */
+        .uploaded-files {
+            margin-top: 2rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background: var(--surface-alt);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+
+        .file-icon {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-size {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .file-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-uploading {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--info);
+        }
+
+        .status-completed {
+            background: rgba(0, 255, 136, 0.2);
+            color: var(--success);
+        }
+
+        .status-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .status-error {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        /* Alert System */
+        .alert-notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--surface);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            z-index: 10000;
+            max-width: 400px;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .alert-notification.show {
+            transform: translateX(0);
+        }
+
+        .alert-notification.warning {
+            border-color: var(--warning);
+        }
+
+        .alert-notification.danger {
+            border-color: var(--danger);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: var(--surface-alt);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: var(--surface-hover);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface-alt);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .activity-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        /* Security Status */
+        .security-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--surface-alt);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+
+        .status-indicator.warning {
+            background: var(--warning);
+        }
+
+        .status-indicator.danger {
+            background: var(--danger);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* User Info */
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* AI Warning */
+        .ai-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .ai-warning i {
+            color: var(--warning);
+            font-size: 1.5rem;
+        }
+
+        .ai-warning-content h4 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-warning-content p {
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-danger .stat-icon,
+        .stat-danger .stat-value {
+            color: var(--danger);
+        }
+
+        .stat-warning .stat-icon,
+        .stat-warning .stat-value {
+            color: var(--warning);
+        }
+
+        .stat-success .stat-icon,
+        .stat-success .stat-value {
+            color: var(--success);
+        }
+
+        .stat-info .stat-icon,
+        .stat-info .stat-value {
+            color: var(--info);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Navigation -->
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel
+                </a>
+
+                <div class="nav-links">
+                    <a href="{{ url_for('user.dashboard') }}" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('user.profile') }}" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                    <a href="{{ url_for('user.files') }}" class="nav-link">
+                        <i class="fas fa-folder"></i>
+                        My Files
+                    </a>
+                    <a href="{{ url_for('user.security') }}" class="nav-link">
+                        <i class="fas fa-shield-alt"></i>
+                        Security
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-avatar">
+                        {{ active_user.full_name.split(' ')[0][0] if active_user.full_name else 'U' }}{{
+                        active_user.full_name.split(' ')[1][0] if active_user.full_name and active_user.full_name.split('
+                        ')|length > 1 else '' }}
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text);">
+                            {{ active_user.full_name or 'User' }}
+                        </div>
+                        <div style="font-size: 0.85rem;">
+                            {{ active_user.department or 'Department' }} • Employee
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Employee Workspace</h1>
+                <p class="dashboard-subtitle">Complete your daily tasks securely and efficiently</p>
+            </div>
+
+            <!-- Security Status -->
+            <div class="security-status">
+                <div class="status-indicator"></div>
+                <div>
+                    <div style="font-weight: 600;">Security Status: Protected</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">All systems are secure. Last scan: 2 minutes
+                        ago</div>
+                </div>
+            </div>
+
+            <!-- AI Warning (if applicable) -->
+            <div id="aiWarning" class="ai-warning" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="ai-warning-content">
+                    <h4>AI Security Alert</h4>
+                    <p id="aiWarningMessage">Your account has been flagged for suspicious activity. Continued violations may result in account suspension.</p>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card stat-info">
+                    <div class="stat-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="stat-value" id="totalFiles">{{ user_stats.total_files or 0 }}</div>
+                    <div class="stat-label">Total Files</div>
+                </div>
+                <div class="stat-card stat-success">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-value" id="secureFiles">{{ (user_stats.total_files or 0) - (user_stats.suspicious_files or 0) }}</div>
+                    <div class="stat-label">Secure Files</div>
+                </div>
+                <div class="stat-card stat-warning">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-value" id="suspiciousFiles">{{ user_stats.suspicious_files or 0 }}</div>
+                    <div class="stat-label">Suspicious Files</div>
+                </div>
+                <div class="stat-card stat-danger">
+                    <div class="stat-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <div class="stat-value" id="userAlerts">{{ alerts|length or 0 }}</div>
+                    <div class="stat-label">Active Alerts</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <a class="action-card" href="{{ url_for('user.files') }}">
+                        <div class="action-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="action-title">Upload Files</div>
+                        <div class="action-description">Securely upload documents and files</div>
+                    </a>
+
+                <div class="action-card" onclick="showTab('documents')">
+                    <div class="action-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="action-title">My Documents</div>
+                    <div class="action-description">Access and manage your documents</div>
+                </div>
+
+                <div class="action-card" onclick="showTab('reports')">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="action-title">Generate Reports</div>
+                    <div class="action-description">Create work reports and analytics</div>
+                </div>
+
+                <div class="action-card" onclick="showTab('security')">
+                    <div class="action-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="action-title">Security Tools</div>
+                    <div class="action-description">Scan files and check security status</div>
+                </div>
+            </div>
+
+            <!-- Main Grid -->
+            <div class="main-grid">
+                <!-- Left Column - Main Content -->
+                <div>
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab active" data-tab="documents" onclick="showTab('documents', this)">My Documents</button>
+                        <button class="tab" data-tab="reports" onclick="showTab('reports', this)">Reports</button>
+                        <button class="tab" data-tab="security" onclick="showTab('security', this)">Security Tools</button>
+                    </div>
+
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-body" style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem;">
+                            <div>
+                                <h3 style="margin: 0 0 0.35rem 0;">Looking to upload files?</h3>
+                                <p style="margin: 0; color: var(--text-muted);">Use the dedicated workspace to upload, scan, and manage your documents.</p>
+                            </div>
+                            <a class="btn btn-primary" href="{{ url_for('user.files') }}">
+                                <i class="fas fa-folder-open"></i>
+                                Open My Files
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Documents Tab -->
+                    <div id="documents" class="tab-content active">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-folder"></i>
+                                My Documents
+                            </div>
+                            <div class="card-body">
+                                <div id="documentsList" style="display: flex; flex-direction: column; gap: 1rem;">
+                                    {% if files %}
+                                        {% for file in files %}
+                                        <div class="file-item">
+                                            <div class="file-info">
+                                                <div class="file-icon">
+                                                    <i class="fas fa-file"></i>
+                                                </div>
+                                                <div class="file-details">
+                                                    <div class="file-name">{{ file.filename }}</div>
+                                                    <div class="file-size">{{ (file.file_size / 1024)|round(2) }} KB</div>
+                                                </div>
+                                            </div>
+                                            <div class="file-status {{ 'status-warning' if file.risk_level in ['medium', 'high'] else 'status-completed' }}">
+                                                {{ file.risk_level|capitalize }} Risk
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                                            <i class="fas fa-folder-open" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                                            <p>No documents uploaded yet.</p>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Tab -->
+                    <div id="reports" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar"></i>
+                                Report Generator
+                            </div>
+                            <div class="card-body">
+                                <div class="form-grid"
+                                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Report Type</label>
+                                        <select class="form-control" id="reportType">
+                                            <option>Daily Activity Report</option>
+                                            <option>Weekly Summary</option>
+                                            <option>Project Progress</option>
+                                            <option>Security Compliance</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Time Period</label>
+                                        <select class="form-control" id="timePeriod">
+                                            <option>Last 7 Days</option>
+                                            <option>Last 30 Days</option>
+                                            <option>This Month</option>
+                                            <option>Custom Range</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary" onclick="generateReport()">
+                                    <i class="fas fa-download"></i>
+                                    Generate Report
+                                </button>
+
+                                <div id="reportResult" style="margin-top: 2rem; display: none;">
+                                    <!-- Report result will appear here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Tools Tab -->
+                    <div id="security" class="tab-content">
+                        <div class="card">
+                            <div class="card-header">
+                                <i class="fas fa-shield-alt"></i>
+                                Security Tools
+                            </div>
+                            <div class="card-body">
+                                <div
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                                    <div class="action-card" onclick="runQuickScan()">
+                                        <div class="action-icon">
+                                            <i class="fas fa-scan"></i>
+                                        </div>
+                                        <div class="action-title">Quick Scan</div>
+                                        <div class="action-description">Scan your files for threats</div>
+                                    </div>
+                                    <div class="action-card" onclick="checkPasswordStrength()">
+                                        <div class="action-icon">
+                                            <i class="fas fa-key"></i>
+                                        </div>
+                                        <div class="action-title">Password Check</div>
+                                        <div class="action-description">Check password strength</div>
+                                    </div>
+                                    <div class="action-card" onclick="showTab('activityLog')">
+                                        <div class="action-icon">
+                                            <i class="fas fa-history"></i>
+                                        </div>
+                                        <div class="action-title">Activity Log</div>
+                                        <div class="action-description">View your security history</div>
+                                    </div>
+                                </div>
+
+                                <!-- Password Strength Checker -->
+                                <div id="passwordChecker" style="margin-top: 2rem; display: none;">
+                                    <h3 style="margin-bottom: 1rem;">Password Strength Checker</h3>
+                                    <div class="form-group">
+                                        <label class="form-label">Enter Password to Check</label>
+                                        <input type="password" class="form-control" id="passwordInput" placeholder="Enter your password">
+                                    </div>
+                                    <button class="btn btn-primary" onclick="analyzePassword()">Check Strength</button>
+                                    <div id="passwordResult" style="margin-top: 1rem;"></div>
+                                </div>
+
+                                <!-- Activity Log -->
+                                <div id="activityLog" style="margin-top: 2rem; display: none;">
+                                    <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                                    <div class="activity-feed" id="activityFeed">
+                                        <!-- Activity items will be populated by JavaScript -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Sidebar -->
+                <div>
+                    <!-- Recent Activity -->
+                    <div class="card" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            <i class="fas fa-history"></i>
+                            Recent Activity
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-feed" id="recentActivity">
+                                {% if activities %}
+                                    {% for activity in activities %}
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-{{ activity.icon }}"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">{{ activity.title }}</div>
+                                            <div class="activity-description">{{ activity.description }}</div>
+                                            <div class="activity-time">{{ activity.time }}</div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <div class="activity-item">
+                                        <div class="activity-icon">
+                                            <i class="fas fa-info-circle"></i>
+                                        </div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">Welcome to CyberSentinel</div>
+                                            <div class="activity-description">No recent activity to display</div>
+                                            <div class="activity-time">Just now</div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System Status -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-server"></i>
+                            System Status
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>File Scanner</span>
+                                    <span style="color: var(--success);">● Active</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Threat Detection</span>
+                                    <span style="color: var(--success);">● Enabled</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Encryption</span>
+                                    <span style="color: var(--success);">● Active</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Backup System</span>
+                                    <span style="color: var(--success);">● Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Tips -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <i class="fas fa-lightbulb"></i>
+                            Security Tips
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--primary);">Use Strong Passwords</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Combine letters, numbers, and special characters</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--primary);">Enable 2FA</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Add an extra layer of security to your account</div>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--primary);">Regular Scans</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Scan files before uploading them to the system</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Tab Management
+        function showTab(tabName, sourceElement) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab or matching tab button
+            if (sourceElement && sourceElement.classList.contains('tab')) {
+                sourceElement.classList.add('active');
+            } else {
+                const matchingTab = document.querySelector(`.tab[data-tab="${tabName}"]`);
+                if (matchingTab) {
+                    matchingTab.classList.add('active');
+                }
+            }
+
+            // Special handling for security tools
+            if (tabName === 'security') {
+                document.getElementById('passwordChecker').style.display = 'none';
+                document.getElementById('activityLog').style.display = 'none';
+            }
+        }
+
+        // File Upload Functionality
+        let uploadedFiles = [];
+        let suspiciousActivityCount = 0;
+
+        function handleFileSelection(files) {
+            for (let file of files) {
+                // Check file size (10MB limit)
+                if (file.size > 10 * 1024 * 1024) {
+                    showAlert(`File "${file.name}" exceeds 10MB limit and was not added.`, 'warning');
+                    continue;
+                }
+
+                // Check for suspicious file types
+                const suspiciousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.vbs', '.js'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+                if (suspiciousExtensions.includes(fileExtension)) {
+                    showAlert(`Suspicious file type detected: "${file.name}". This file type is restricted.`, 'danger');
+                    logSecurityAlert(`Attempted upload of restricted file type: ${file.name}`);
+                    
+                    // Increment suspicious activity count
+                    suspiciousActivityCount++;
+                    checkSuspiciousActivity();
+                    
+                    continue;
+                }
+
+                uploadedFiles.push(file);
+                addFileToList(file);
+            }
+        }
+
+        function addFileToList(file) {
+            const filesContainer = document.getElementById('uploadedFiles');
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.innerHTML = `
+                <div class="file-info">
+                    <div class="file-icon">
+                        <i class="fas fa-file"></i>
+                    </div>
+                    <div class="file-details">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+                <div class="file-status status-uploading">
+                    Ready to upload
+                </div>
+            `;
+            filesContainer.appendChild(fileItem);
+        }
+
+        function uploadFiles() {
+            if (uploadedFiles.length === 0) {
+                showAlert('Please select files to upload.', 'warning');
+                return;
+            }
+
+            const filesContainer = document.getElementById('uploadedFiles');
+            const fileItems = filesContainer.querySelectorAll('.file-item');
+            const fileDescription = document.getElementById('fileDescription').value;
+
+            uploadedFiles.forEach((file, index) => {
+                const statusElement = fileItems[index].querySelector('.file-status');
+                statusElement.textContent = 'Uploading...';
+                statusElement.className = 'file-status status-uploading';
+
+                // Simulate upload process
+                setTimeout(() => {
+                    // Simulate AI threat detection
+                    const isSuspicious = Math.random() < 0.2; // 20% chance of being suspicious
+                    
+                    if (isSuspicious) {
+                        statusElement.textContent = 'Suspicious - Under Review';
+                        statusElement.className = 'file-status status-warning';
+                        
+                        // Log suspicious file
+                        logSecurityAlert(`Suspicious file detected: ${file.name}`);
+                        
+                        // Increment suspicious activity count
+                        suspiciousActivityCount++;
+                        checkSuspiciousActivity();
+                    } else {
+                        statusElement.textContent = 'Uploaded';
+                        statusElement.className = 'file-status status-completed';
+                    }
+
+                    // Log successful upload
+                    logActivity(`File uploaded: ${file.name}`, isSuspicious ? 'warning' : 'success');
+
+                    // Update statistics
+                    updateStatistics();
+
+                    // Check for large files and log warning
+                    if (file.size > 5 * 1024 * 1024) {
+                        showAlert(`Large file uploaded: "${file.name}" (${formatFileSize(file.size)})`, 'warning');
+                    }
+                }, 2000 + (index * 1000));
+            });
+
+            showAlert('File upload started successfully!', 'success');
+        }
+
+        function clearFiles() {
+            uploadedFiles = [];
+            document.getElementById('uploadedFiles').innerHTML = '';
+            document.getElementById('fileDescription').value = '';
+        }
+
+        // Security Tools
+        function runQuickScan() {
+            showAlert('Quick scan initiated. Scanning your files for threats...', 'info');
+            
+            // Simulate scanning process
+            setTimeout(() => {
+                const threatsFound = Math.random() < 0.3; // 30% chance of finding threats
+                
+                if (threatsFound) {
+                    showAlert('Scan complete. Potential threats detected in your files.', 'warning');
+                    logActivity('Quick scan completed - Threats detected', 'warning');
+                    
+                    // Increment suspicious activity count
+                    suspiciousActivityCount++;
+                    checkSuspiciousActivity();
+                } else {
+                    showAlert('Scan complete. No threats detected.', 'success');
+                    logActivity('Quick scan completed - No threats found', 'success');
+                }
+            }, 3000);
+        }
+
+        function checkPasswordStrength() {
+            document.getElementById('passwordChecker').style.display = 'block';
+            document.getElementById('activityLog').style.display = 'none';
+        }
+
+        function analyzePassword() {
+            const password = document.getElementById('passwordInput').value;
+            const resultDiv = document.getElementById('passwordResult');
+            
+            if (!password) {
+                resultDiv.innerHTML = '<div class="file-status status-warning">Please enter a password to check.</div>';
+                return;
+            }
+            
+            // Simple password strength analysis
+            let strength = 0;
+            let feedback = [];
+            
+            // Length check
+            if (password.length >= 8) strength++;
+            else feedback.push('Password should be at least 8 characters long');
+            
+            // Contains lowercase
+            if (/[a-z]/.test(password)) strength++;
+            else feedback.push('Add lowercase letters');
+            
+            // Contains uppercase
+            if (/[A-Z]/.test(password)) strength++;
+            else feedback.push('Add uppercase letters');
+            
+            // Contains numbers
+            if (/[0-9]/.test(password)) strength++;
+            else feedback.push('Add numbers');
+            
+            // Contains special characters
+            if (/[^a-zA-Z0-9]/.test(password)) strength++;
+            else feedback.push('Add special characters');
+            
+            // Determine strength level
+            let strengthText, strengthClass;
+            if (strength <= 2) {
+                strengthText = 'Weak';
+                strengthClass = 'status-error';
+            } else if (strength <= 4) {
+                strengthText = 'Medium';
+                strengthClass = 'status-warning';
+            } else {
+                strengthText = 'Strong';
+                strengthClass = 'status-completed';
+            }
+            
+            resultDiv.innerHTML = `
+                <div class="file-status ${strengthClass}">Password Strength: ${strengthText}</div>
+                ${feedback.length > 0 ? `<div style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--text-muted);"><strong>Suggestions:</strong><br>${feedback.join('<br>')}</div>` : ''}
+            `;
+            
+            logActivity('Password strength checked', 'info');
+        }
+
+        function generateReport() {
+            const reportType = document.getElementById('reportType').value;
+            const timePeriod = document.getElementById('timePeriod').value;
+            
+            showAlert(`Generating ${reportType} for ${timePeriod}...`, 'info');
+            
+            // Simulate report generation
+            setTimeout(() => {
+                const reportResult = document.getElementById('reportResult');
+                reportResult.style.display = 'block';
+                reportResult.innerHTML = `
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-file-pdf"></i>
+                            Report Generated
+                        </div>
+                        <div class="card-body">
+                            <h3 style="margin-bottom: 1rem;">${reportType} - ${timePeriod}</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Files Uploaded</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">${Math.floor(Math.random() * 20) + 5}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Security Scans</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--info);">${Math.floor(Math.random() * 10) + 3}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Threats Detected</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">${Math.floor(Math.random() * 5)}</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Security Score</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${Math.floor(Math.random() * 20) + 80}%</div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-download"></i>
+                                Download PDF Report
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                logActivity(`Generated report: ${reportType}`, 'info');
+            }, 2000);
+        }
+
+        // Suspicious Activity Monitoring
+        function checkSuspiciousActivity() {
+            if (suspiciousActivityCount >= 3) {
+                showAIWarning("Multiple suspicious activities detected. Your account is being monitored. Continued violations may result in account suspension.");
+                
+                // Log admin alert
+                logAdminAlert(`User ${document.querySelector('.user-info div:first-child').textContent.trim()} has performed ${suspiciousActivityCount} suspicious activities.`);
+                
+                // If too many violations, simulate account lock
+                if (suspiciousActivityCount >= 5) {
+                    setTimeout(() => {
+                        showAIWarning("ACCOUNT SUSPENSION IMMINENT: Due to repeated security violations, your account will be suspended if suspicious activity continues.");
+                        logAdminAlert(`CRITICAL: User ${document.querySelector('.user-info div:first-child').textContent.trim()} is at risk of account suspension due to ${suspiciousActivityCount} security violations.`);
+                    }, 3000);
+                }
+            }
+        }
+
+        function showAIWarning(message) {
+            const warningDiv = document.getElementById('aiWarning');
+            const messageDiv = document.getElementById('aiWarningMessage');
+            
+            messageDiv.textContent = message;
+            warningDiv.style.display = 'flex';
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                warningDiv.style.display = 'none';
+            }, 10000);
+        }
+
+        // Utility Functions
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = `alert-notification ${type}`;
+            alert.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 1rem;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'exclamation-circle'}" 
+                       style="color: ${type === 'success' ? 'var(--primary)' : type === 'warning' ? 'var(--warning)' : 'var(--danger)'}; font-size: 1.2rem;"></i>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem;">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                        <div style="color: var(--text-muted);">${message}</div>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+
+            document.body.appendChild(alert);
+            setTimeout(() => alert.classList.add('show'), 100);
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => alert.remove(), 300);
+            }, 5000);
+        }
+
+        function logActivity(activity, type = 'info') {
+            console.log('Activity logged:', activity);
+            
+            // Add to recent activity feed
+            const activityFeed = document.getElementById('recentActivity');
+            const activityItem = document.createElement('div');
+            activityItem.className = 'activity-item';
+            
+            let icon = 'info-circle';
+            if (type === 'warning') icon = 'exclamation-triangle';
+            if (type === 'success') icon = 'check-circle';
+            if (type === 'danger') icon = 'exclamation-circle';
+            
+            activityItem.innerHTML = `
+                <div class="activity-icon">
+                    <i class="fas fa-${icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${type.charAt(0).toUpperCase() + type.slice(1)}</div>
+                    <div class="activity-description">${activity}</div>
+                    <div class="activity-time">Just now</div>
+                </div>
+            `;
+            
+            activityFeed.insertBefore(activityItem, activityFeed.firstChild);
+            
+            // Limit to 10 activities
+            if (activityFeed.children.length > 10) {
+                activityFeed.removeChild(activityFeed.lastChild);
+            }
+            
+            // In a real application, this would send data to your backend
+        }
+
+        function logSecurityAlert(alert) {
+            console.log('Security alert:', alert);
+            // In a real application, this would create an alert for admins
+        }
+
+        function logAdminAlert(alert) {
+            console.log('Admin alert:', alert);
+            // In a real application, this would notify administrators
+        }
+
+        function updateStatistics() {
+            // Update statistics display
+            const totalFiles = parseInt(document.getElementById('totalFiles').textContent) + uploadedFiles.length;
+            document.getElementById('totalFiles').textContent = totalFiles;
+            
+            // Simulate some suspicious files
+            const suspiciousFiles = parseInt(document.getElementById('suspiciousFiles').textContent);
+            const newSuspicious = Math.floor(Math.random() * 2); // 0 or 1
+            document.getElementById('suspiciousFiles').textContent = suspiciousFiles + newSuspicious;
+            
+            // Update secure files
+            document.getElementById('secureFiles').textContent = totalFiles - (suspiciousFiles + newSuspicious);
+        }
+
+        // Drag and Drop functionality
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        if (fileUploadArea) {
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('dragover');
+            });
+
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('dragover');
+            });
+
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('dragover');
+                handleFileSelection(e.dataTransfer.files);
+            });
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            // Navbar scroll effect
+            window.addEventListener('scroll', function () {
+                const navbar = document.getElementById('cyberNav');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Simulate initial activity
+            setTimeout(() => {
+                logActivity('User logged into dashboard', 'info');
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts - CyberSentinel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --border-glow: rgba(0, 255, 136, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .cyber-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--surface);
+            padding: 2rem 0;
+            margin-top: var(--nav-height);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Main Card */
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+
+        .main-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-badge {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Tables */
+        .table-container {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cyber-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cyber-table th {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .cyber-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .cyber-table tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .cyber-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-high {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .badge-medium {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .badge-low {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .status-open {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .status-investigating {
+            color: var(--warning);
+            font-weight: 600;
+        }
+
+        .status-resolved {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            background: var(--gradient);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .cyber-footer {
+            background: rgba(17, 24, 39, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .page-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .cyber-table {
+                font-size: 0.85rem;
+            }
+
+            .cyber-table th,
+            .cyber-table td {
+                padding: 1rem 0.5rem;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    {% set nav_user = active_user %}
+    {% set alerts_list = alerts|default([]) %}
+    {% set nav_user = active_user %}
+    {% set alerts_list = alerts|default([]) %}
+    <div class="cyber-container">
+        <!-- Navigation -->
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel
+                </a>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('admin.alerts') }}" class="nav-link active">
+                        <i class="fas fa-bell"></i>
+                        Alerts
+                    </a>
+                    <a href="{{ url_for('admin.employee_monitoring') }}" class="nav-link">
+                        <i class="fas fa-user-shield"></i>
+                        Employee Monitoring
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                    <a href="{{ url_for('admin.profile') }}" class="nav-link">
+                        <i class="fas fa-user"></i>
+                        Profile
+                    </a>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="cyber-btn btn-outline">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <a href="{{ url_for('auth.logout') }}" class="cyber-btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="page-content">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-satellite-dish"></i>
+                        Alert Inventory
+                    </h1>
+                    <p class="page-subtitle">
+                        Monitor and manage all security alerts across the organization
+                    </p>
+                </div>
+                <a href="/admin/dashboard" class="cyber-btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="container">
+                <!-- Alerts Table -->
+                <div class="main-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-triangle-exclamation"></i>
+                            Security Alerts
+                        </div>
+                        <div class="card-badge">{{ alerts_list|length }} Total Alerts</div>
+                    </div>
+                    <div class="table-container">
+                        <table class="cyber-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>User</th>
+                                    <th>Risk Level</th>
+                                    <th>Status</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alert in alerts_list %}
+                                {% set risk_level = alert.risk_level or 'low' %}
+                                {% set risk_score = alert.risk_score or 0 %}
+                                {% set display_name = alert.full_name or (alert.user.full_name if alert.user is defined and alert.user and alert.user.full_name else None) %}
+                                {% set display_username = alert.username or (alert.user.username if alert.user is defined and alert.user and alert.user.username else None) %}
+                                <tr>
+                                    <td>
+                                        <strong>#{{ alert.id }}</strong>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <i class="fas fa-{{ 
+                                                'user-shield' if 'privilege' in alert.alert_type.lower() 
+                                                else 'download' if 'download' in alert.alert_type.lower() 
+                                                else 'upload' if 'upload' in alert.alert_type.lower()
+                                                else 'user-times' if 'failed' in alert.alert_type.lower()
+                                                else 'exclamation-triangle' 
+                                            }}"></i>
+                                            {{ alert.alert_type }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <div class="user-avatar">
+                                                {{ (display_name or 'U')[0] }}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight: 600; color: var(--text);">
+                                                    {{ display_name or 'Unknown User' }}
+                                                </div>
+                                                <small style="color: var(--text-muted);">
+                                                    @{{ display_username or 'n/a' }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge badge-{{ 
+                                            'critical' if risk_level == 'critical' 
+                                            else 'high' if risk_level == 'high' 
+                                            else 'medium' if risk_level == 'medium'
+                                            else 'low'
+                                        }}">
+                                            {{ risk_level|upper }} ({{ '%.2f'|format(risk_score) }})
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="status-{{ alert.status or 'open' }}">
+                                            {{ (alert.status or 'open')|capitalize }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small style="color: var(--text-muted);">
+                                            {{ alert.created_at.strftime('%Y-%m-%d %H:%M') if alert.created_at else 'Unknown' }}
+                                        </small>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <i class="fas fa-bell-slash"></i>
+                                            <h3>No Alerts Found</h3>
+                                            <p>No security alerts have been detected in the system.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Alert Statistics -->
+                <div class="main-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Alert Statistics
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(0, 255, 136, 0.05); border-radius: 8px;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--danger);">
+                                    {{ alerts_list|selectattr('status', 'equalto', 'open')|list|length }}
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">Open Alerts</div>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(99, 102, 241, 0.05); border-radius: 8px;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--warning);">
+                                    {{ alerts_list|selectattr('status', 'equalto', 'investigating')|list|length }}
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">Investigating</div>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(0, 255, 136, 0.05); border-radius: 8px;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--primary);">
+                                    {{ alerts_list|selectattr('status', 'equalto', 'resolved')|list|length }}
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">Resolved</div>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(245, 158, 11, 0.05); border-radius: 8px;">
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--accent);">
+                                    {{ alerts_list|selectattr('risk_level', 'equalto', 'critical')|list|length }}
+                                </div>
+                                <div style="color: var(--text-muted); font-size: 0.9rem;">Critical</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="cyber-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </div>
+                <p class="footer-description">
+                    © 2025 CyberSentinel AI Defense Platform | Advanced Threat Detection & Prevention System
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('cyberNav');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Theme toggle functionality
+        document.querySelector('.btn-outline').addEventListener('click', function() {
+            const body = document.body;
+            const isDark = body.classList.contains('dark-mode');
+            
+            if (isDark) {
+                body.classList.remove('dark-mode');
+                this.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                body.classList.add('dark-mode');
+                this.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+
+        // Table row click functionality
+        document.querySelectorAll('.cyber-table tbody tr').forEach(row => {
+            row.addEventListener('click', function() {
+                const alertId = this.querySelector('td:first-child strong').textContent.replace('#', '');
+                // Redirect to alert detail page or show modal
+                console.log('Viewing alert:', alertId);
+            });
+        });
+    </script>
+</body>
+</html>

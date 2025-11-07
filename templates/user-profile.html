@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Center - CyberSentinel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #00ff88;
+            --info: #3b82f6;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #374151;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .user-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        /* Page Header */
+        .page-header {
+            margin-top: var(--nav-height);
+            padding: 3rem 2rem 2rem;
+            background: rgba(17, 24, 39, 0.75);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            color: var(--primary);
+            font-size: 2.2rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .content-area {
+            max-width: 1400px;
+            margin: 2rem auto 4rem;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(17, 24, 39, 0.92);
+            border: 1px solid rgba(55, 65, 81, 0.6);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .info-row {
+            margin-bottom: 1.25rem;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.35rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .badge-admin {
+            background: rgba(99, 102, 241, 0.18);
+            color: #818cf8;
+        }
+
+        .badge-user {
+            background: rgba(0, 255, 136, 0.18);
+            color: #34d399;
+        }
+
+        .badge-analyst {
+            background: rgba(14, 165, 233, 0.18);
+            color: #38bdf8;
+        }
+
+        .metrics-grid {
+            margin-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .metric {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            border-radius: 14px;
+            padding: 1rem 1.25rem;
+        }
+
+        .metric span {
+            display: block;
+        }
+
+        .metric .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .metric .value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-top: 0.35rem;
+        }
+
+        form label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.35rem;
+        }
+
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(55, 65, 81, 0.6);
+            background: rgba(17, 24, 39, 0.85);
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: border 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        form input:focus, form textarea:focus {
+            outline: none;
+            border-color: rgba(0, 255, 136, 0.6);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.2);
+        }
+
+        .form-row {
+            margin-bottom: 1.2rem;
+        }
+
+        .save-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.6rem;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary);
+            color: #000;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .flash-container {
+            max-width: 900px;
+            margin: 2rem auto 0;
+            padding: 0 2rem;
+        }
+
+        .flash-message {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .flash-success {
+            background: rgba(22, 163, 74, 0.18);
+            border-color: rgba(22, 163, 74, 0.35);
+            color: #4ade80;
+        }
+
+        .flash-warning {
+            background: rgba(245, 158, 11, 0.18);
+            border-color: rgba(245, 158, 11, 0.35);
+            color: #fbbf24;
+        }
+
+        .flash-error, .flash-danger {
+            background: rgba(239, 68, 68, 0.18);
+            border-color: rgba(239, 68, 68, 0.35);
+            color: #f87171;
+        }
+
+        .timeline {
+            margin-top: 2rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.18);
+            padding-top: 1.5rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1.1rem 1.25rem;
+            border-radius: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.12);
+            background: rgba(17, 24, 39, 0.75);
+            margin-bottom: 1rem;
+        }
+
+        .timeline-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 136, 0.15);
+            color: var(--primary);
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-content h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-content span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .danger-zone {
+            margin-top: 2rem;
+            padding: 1.75rem;
+            border-radius: 14px;
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .danger-zone h3 {
+            color: #f87171;
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .danger-zone button {
+            background: transparent;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            color: #fca5a5;
+            padding: 0.6rem 1.4rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .danger-zone button:hover {
+            background: rgba(239, 68, 68, 0.18);
+            color: #fecaca;
+        }
+
+        @media (max-width: 1200px) {
+            .content-area {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .page-content {
+                flex-direction: column;
+            }
+
+            .user-info {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    {% set admin_view = is_admin_view if is_admin_view is defined else False %}
+    {% set profile_name = active_user.full_name if active_user and active_user.full_name else (user.full_name if user and user.full_name else None) %}
+    {% set name_parts = profile_name.split(' ') if profile_name else [] %}
+    {% set initials = (name_parts[0][0] ~ (name_parts[1][0] if name_parts|length > 1 else '')) if name_parts else 'U' %}
+    {% set profile_department = active_user.department if active_user and active_user.department else (user.department if user and user.department else 'Department') %}
+    {% set profile_role = user.role if user and user.role else (active_user.role if active_user and active_user.role else 'member') %}
+    <div class="dashboard-container">
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel
+                </a>
+
+                <div class="nav-links">
+                    {% if admin_view %}
+                        <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('admin.employee_monitoring') }}" class="nav-link">
+                            <i class="fas fa-user-shield"></i>
+                            Employee Monitoring
+                        </a>
+                        <a href="{{ url_for('admin.ai_analyst') }}" class="nav-link">
+                            <i class="fas fa-brain"></i>
+                            AI Security Analyst
+                        </a>
+                        <a href="{{ url_for('admin.alerts') }}" class="nav-link">
+                            <i class="fas fa-bell"></i>
+                            Alerts
+                        </a>
+                        <a href="{{ url_for('admin.reports') }}" class="nav-link">
+                            <i class="fas fa-chart-bar"></i>
+                            Reports
+                        </a>
+                        <a href="{{ url_for('admin.profile') }}" class="nav-link active">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('user.dashboard') }}" class="nav-link">
+                            <i class="fas fa-tachometer-alt"></i>
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('user.profile') }}" class="nav-link active">
+                            <i class="fas fa-user"></i>
+                            Profile
+                        </a>
+                        <a href="{{ url_for('user.files') }}" class="nav-link">
+                            <i class="fas fa-folder"></i>
+                            My Files
+                        </a>
+                        <a href="{{ url_for('user.security') }}" class="nav-link">
+                            <i class="fas fa-shield-halved"></i>
+                            Security
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="nav-link">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    {% endif %}
+                </div>
+
+                {% if admin_view %}
+                    <div class="nav-actions">
+                        <a href="{{ url_for('admin.profile') }}" class="cyber-btn btn-outline">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </a>
+                        <a href="{{ url_for('auth.logout') }}" class="cyber-btn btn-outline">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </a>
+                    </div>
+                {% endif %}
+
+                <div class="user-info">
+                    <div class="user-avatar">{{ initials }}</div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text);">
+                            {{ profile_name or 'User' }}
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
+                            {{ profile_department }} • {{ 'Administrator' if admin_view else (profile_role|capitalize if profile_role else 'Member') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <header class="page-header">
+            <div class="page-content">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-id-card-clip"></i>
+                        Profile Center
+                    </h1>
+                    <p class="page-subtitle">
+                        Manage your identity, keep your details current, and stay aligned with CyberSentinel security policies.
+                    </p>
+                </div>
+            </div>
+        </header>
+
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <div class="flash-container">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            <i class="fas fa-circle-info"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <main class="content-area">
+            <section class="card">
+                <h2><i class="fas fa-user-circle"></i> Account Overview</h2>
+                <div class="info-row">
+                    <div class="info-label">Full Name</div>
+                    <div class="info-value">{{ user.full_name or 'Not set' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Username</div>
+                    <div class="info-value" style="font-family: 'JetBrains Mono', monospace;">
+                        {{ user.username }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Department</div>
+                    <div class="info-value">{{ user.department or 'Unassigned' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Role</div>
+                    {% set badge_class = 'badge-user' %}
+                    {% if user.role == 'admin' %}
+                        {% set badge_class = 'badge-admin' %}
+                    {% elif user.role == 'analyst' %}
+                        {% set badge_class = 'badge-analyst' %}
+                    {% endif %}
+                    <div class="badge {{ badge_class }}">
+                        <i class="fas fa-user-shield"></i>
+                        {{ user.role|capitalize }}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Account Status</div>
+                    <div class="badge {{ 'badge-user' if user.is_active else 'badge-analyst' }}">
+                        <i class="fas fa-circle"></i>
+                        {{ 'Active' if user.is_active else 'Suspended' }}
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="label">Last Login</span>
+                        <span class="value">
+                            {% if user.last_login %}
+                                {{ user.last_login.strftime('%b %d, %Y %H:%M') }}
+                            {% else %}
+                                Never
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Member Since</span>
+                        <span class="value">
+                            {% if user.created_at %}
+                                {{ user.created_at.strftime('%b %d, %Y') }}
+                            {% else %}
+                                Unknown
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="metric">
+                        <span class="label">Security Tier</span>
+                        <span class="value">
+                            {% if user.role == 'admin' %}
+                                Tier 4
+                            {% elif user.role == 'analyst' %}
+                                Tier 3
+                            {% else %}
+                                Tier 2
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="timeline">
+                    <h2><i class="fas fa-clock-rotate-left"></i> Activity Highlights</h2>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Account Created</h3>
+                            <span>{{ user.created_at.strftime('%B %d, %Y %H:%M') if user.created_at else 'Unknown creation time' }}</span>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--secondary);">
+                            <i class="fas fa-shield"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h3>Last Successful Login</h3>
+                            <span>{{ user.last_login.strftime('%B %d, %Y %H:%M') if user.last_login else 'No login recorded' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="danger-zone">
+                    <h3><i class="fas fa-triangle-exclamation"></i> Danger Zone</h3>
+                    <p style="color: rgba(248, 250, 252, 0.8); margin-bottom: 1rem;">
+                        Keep your credentials private. If you suspect account compromise, contact your administrator immediately.
+                    </p>
+                    <button type="button" id="resetPasswordBtn">
+                        <i class="fas fa-key"></i>
+                        Request Password Reset
+                    </button>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2><i class="fas fa-wrench"></i> Update Personal Details</h2>
+                <form method="POST" id="profileForm">
+                    <div class="form-row">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" placeholder="Enter your full name"
+                               value="{{ user.full_name or '' }}">
+                    </div>
+                    <div class="form-row">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" name="department" placeholder="e.g. Security Operations"
+                               value="{{ user.department or '' }}">
+                    </div>
+
+                    <div class="form-row">
+                        <label for="role_display">Role</label>
+                        <input type="text" id="role_display" value="{{ user.role|capitalize }}" disabled>
+                        <small style="display: block; color: var(--text-muted); margin-top: 0.35rem;">
+                            Role assignments are managed by administrators.
+                        </small>
+                    </div>
+
+                    <button type="submit" class="save-btn" id="saveProfileBtn">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                </form>
+
+                <div style="margin-top: 2rem;">
+                    <h2 style="margin-bottom: 1rem;"><i class="fas fa-shield-keyhole"></i> Security Tips</h2>
+                    <ul style="list-style: none; display: grid; gap: 0.85rem; padding: 0;">
+                        <li style="display: flex; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.2rem;"></i>
+                            <span>Enable multi-factor authentication if your organization supports it.</span>
+                        </li>
+                        <li style="display: flex; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.2rem;"></i>
+                            <span>Use a password manager to generate unique, strong credentials.</span>
+                        </li>
+                        <li style="display: flex; gap: 0.75rem;">
+                            <i class="fas fa-check-circle" style="color: var(--primary); margin-top: 0.2rem;"></i>
+                            <span>Review account activity weekly to stay ahead of suspicious behaviour.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            window.addEventListener('scroll', function () {
+                const navbar = document.getElementById('cyberNav');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            const resetBtn = document.getElementById('resetPasswordBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function () {
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Requesting...';
+                    this.disabled = true;
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-check"></i> Request sent to admin';
+                        this.style.color = '#f8fafc';
+                    }, 1500);
+                });
+            }
+
+            const profileForm = document.getElementById('profileForm');
+            const saveBtn = document.getElementById('saveProfileBtn');
+            if (profileForm && saveBtn) {
+                profileForm.addEventListener('submit', function () {
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSentinel AI - User Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #00ff88;
+            --info: #3b82f6;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --border-glow: rgba(0, 255, 136, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .dashboard-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .btn-warning:hover {
+            background: #eab308;
+            transform: translateY(-2px);
+        }
+
+        /* Page Header */
+        .page-header {
+            background: var(--surface);
+            padding: 2rem 0;
+            margin-top: var(--nav-height);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .page-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.2rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Cards */
+        .cyber-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-critical {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-high {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .badge-medium {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .badge-low {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .badge-success {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .badge-info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid var(--info);
+            color: var(--info);
+        }
+
+        /* Tables */
+        .table-container {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .cyber-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cyber-table th {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .cyber-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .cyber-table tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .cyber-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        /* File Upload */
+        .file-upload-area {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .file-upload-area i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Notifications */
+        .notification-container {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .notification-critical .notification-icon {
+            color: var(--danger);
+        }
+
+        .notification-high .notification-icon {
+            color: var(--warning);
+        }
+
+        .notification-medium .notification-icon {
+            color: var(--accent);
+        }
+
+        .notification-info .notification-icon {
+            color: var(--info);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* User Management */
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .user-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .user-header {
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .user-details {
+            padding: 1.5rem;
+        }
+
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-detail:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .detail-value {
+            font-weight: 500;
+        }
+
+        /* Footer */
+        .cyber-footer {
+            background: rgba(17, 24, 39, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .page-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .cyber-table {
+                font-size: 0.85rem;
+            }
+
+            .cyber-table th,
+            .cyber-table td {
+                padding: 1rem 0.5rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary);
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-title i {
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab:hover {
+            color: var(--text);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Navigation -->
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="#" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </a>
+
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        Alerts
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-file-lines"></i>
+                        Reports
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Users
+                    </a>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="cyber-btn btn-outline" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-info" style="display: flex; align-items: center; gap: 1rem;">
+                        <div class="user-avatar">JD</div>
+                        <div>
+                            <div style="font-weight: 600; color: var(--text);">John Doe</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">Administrator</div>
+                        </div>
+                    </div>
+                    <a href="#" class="cyber-btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Notifications Container -->
+        <div class="notification-container" id="notificationContainer"></div>
+
+        <!-- Page Header -->
+        <header class="page-header">
+            <div class="page-content">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Security Dashboard
+                    </h1>
+                    <p class="page-subtitle">
+                        Monitor security threats, manage users, and analyze system activity
+                    </p>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="cyber-btn btn-primary" id="quickScanBtn">
+                        <i class="fas fa-shield-alt"></i>
+                        Quick System Scan
+                    </button>
+                    <button class="cyber-btn btn-outline" id="generateReportBtn">
+                        <i class="fas fa-file-pdf"></i>
+                        Generate Report
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="container">
+                <!-- Dashboard Stats -->
+                <div class="dashboard-grid">
+                    <div class="cyber-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-shield-alt"></i>
+                                System Security
+                            </div>
+                            <span class="status-badge badge-success">Protected</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Threat Level</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">Low</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Active Threats</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);">2</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Protected Files</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">1,247</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Last Scan</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--text);">2h ago</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-users"></i>
+                                User Activity
+                            </div>
+                            <span class="status-badge badge-info">24 Active</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Total Users</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);">142</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Online Now</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">24</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Suspicious</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);">3</div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--text-muted);">Blocked</div>
+                                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);">1</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cyber-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-bell"></i>
+                                Recent Alerts
+                            </div>
+                            <span class="status-badge badge-warning">5 New</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600;">Suspicious Login</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);">User: jsmith@company.com</div>
+                                    </div>
+                                    <span class="status-badge badge-high">High</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 600;">File Upload Detected</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-muted);">User: mwilson@company.com</div>
+                                    </div>
+                                    <span class="status-badge badge-medium">Medium</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Area -->
+                <div class="dashboard-grid" style="grid-template-columns: 2fr 1fr;">
+                    <!-- Left Column -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- File Upload Section -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    Secure File Upload
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="file-upload-area" id="fileUploadArea">
+                                    <i class="fas fa-file-upload"></i>
+                                    <h3>Upload Files for Security Analysis</h3>
+                                    <p>Drag & drop files here or click to browse</p>
+                                    <input type="file" id="fileInput" multiple style="display: none;">
+                                </div>
+                                <div id="uploadedFiles" style="margin-top: 1.5rem;"></div>
+                            </div>
+                        </div>
+
+                        <!-- User Management Section -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-users-cog"></i>
+                                    User Management
+                                </div>
+                                <button class="cyber-btn btn-primary" id="addUserBtn">
+                                    <i class="fas fa-plus"></i>
+                                    Add User
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="user-grid" id="userGrid">
+                                    <!-- Users will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Activity Chart -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-chart-line"></i>
+                                    Threat Activity
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="chart-container">
+                                    <canvas id="threatChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Actions -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-bolt"></i>
+                                    Quick Actions
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <button class="cyber-btn btn-outline">
+                                        <i class="fas fa-sync"></i>
+                                        Refresh Data
+                                    </button>
+                                    <button class="cyber-btn btn-outline">
+                                        <i class="fas fa-cog"></i>
+                                        Settings
+                                    </button>
+                                    <button class="cyber-btn btn-outline">
+                                        <i class="fas fa-history"></i>
+                                        View Logs
+                                    </button>
+                                    <button class="cyber-btn btn-outline">
+                                        <i class="fas fa-shield-virus"></i>
+                                        Run Scan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Status -->
+                        <div class="cyber-card">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <i class="fas fa-server"></i>
+                                    System Status
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>AI Detection Engine</span>
+                                        <span class="status-badge badge-success">Online</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Threat Database</span>
+                                        <span class="status-badge badge-success">Updated</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>File Scanner</span>
+                                        <span class="status-badge badge-success">Active</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Network Monitor</span>
+                                        <span class="status-badge badge-warning">Limited</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="cyber-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </div>
+                <p class="footer-description">
+                    © 2025 CyberSentinel AI Defense Platform | Advanced Threat Detection & Prevention System
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add User Modal -->
+    <div class="modal" id="addUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="fas fa-user-plus"></i>
+                    Add New User
+                </div>
+                <button class="modal-close" id="closeAddUserModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addUserForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="userFullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <select class="form-control" id="userDepartment" required>
+                            <option value="">Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="Security">Security</option>
+                            <option value="HR">HR</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Marketing">Marketing</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Role</label>
+                        <select class="form-control" id="userRole" required>
+                            <option value="">Select Role</option>
+                            <option value="user">User</option>
+                            <option value="analyst">Security Analyst</option>
+                            <option value="admin">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Security Level</label>
+                        <select class="form-control" id="userSecurityLevel" required>
+                            <option value="standard">Standard</option>
+                            <option value="elevated">Elevated</option>
+                            <option value="restricted">Restricted</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="cyber-btn btn-outline" id="cancelAddUser">Cancel</button>
+                <button class="cyber-btn btn-primary" id="saveUser">Save User</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample user data
+        const users = [
+            {
+                id: 1,
+                name: "John Smith",
+                email: "jsmith@company.com",
+                department: "IT",
+                role: "Admin",
+                status: "Active",
+                lastLogin: "2 hours ago",
+                securityLevel: "Elevated"
+            },
+            {
+                id: 2,
+                name: "Sarah Johnson",
+                email: "sjohnson@company.com",
+                department: "Security",
+                role: "Analyst",
+                status: "Active",
+                lastLogin: "30 minutes ago",
+                securityLevel: "Elevated"
+            },
+            {
+                id: 3,
+                name: "Michael Wilson",
+                email: "mwilson@company.com",
+                department: "Finance",
+                role: "User",
+                status: "Active",
+                lastLogin: "1 day ago",
+                securityLevel: "Standard"
+            },
+            {
+                id: 4,
+                name: "Emily Davis",
+                email: "edavis@company.com",
+                department: "HR",
+                role: "User",
+                status: "Inactive",
+                lastLogin: "5 days ago",
+                securityLevel: "Restricted"
+            }
+        ];
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            initializeCharts();
+            setupEventListeners();
+            loadUsers();
+            simulateAIThreatDetection();
+        });
+
+        function initializeDashboard() {
+            // Navbar scroll effect
+            window.addEventListener('scroll', function() {
+                const navbar = document.getElementById('cyberNav');
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        function initializeCharts() {
+            // Threat Activity Chart
+            const threatCtx = document.getElementById('threatChart').getContext('2d');
+            const threatChart = new Chart(threatCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Threats Detected',
+                        data: [12, 19, 8, 15, 12, 5, 9],
+                        borderColor: 'rgba(0, 255, 136, 0.8)',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: '#111827',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#f8fafc',
+                            borderColor: '#374151'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // File upload
+            const fileUploadArea = document.getElementById('fileUploadArea');
+            const fileInput = document.getElementById('fileInput');
+            
+            fileUploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = 'var(--primary)';
+                fileUploadArea.style.background = 'rgba(0, 255, 136, 0.1)';
+            });
+            
+            fileUploadArea.addEventListener('dragleave', function() {
+                fileUploadArea.style.borderColor = 'var(--border)';
+                fileUploadArea.style.background = 'transparent';
+            });
+            
+            fileUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = 'var(--border)';
+                fileUploadArea.style.background = 'transparent';
+                
+                if (e.dataTransfer.files.length) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    handleFiles(fileInput.files);
+                }
+            });
+
+            // Add user modal
+            const addUserBtn = document.getElementById('addUserBtn');
+            const addUserModal = document.getElementById('addUserModal');
+            const closeAddUserModal = document.getElementById('closeAddUserModal');
+            const cancelAddUser = document.getElementById('cancelAddUser');
+            const saveUser = document.getElementById('saveUser');
+            
+            addUserBtn.addEventListener('click', function() {
+                addUserModal.style.display = 'flex';
+            });
+            
+            closeAddUserModal.addEventListener('click', function() {
+                addUserModal.style.display = 'none';
+            });
+            
+            cancelAddUser.addEventListener('click', function() {
+                addUserModal.style.display = 'none';
+            });
+            
+            saveUser.addEventListener('click', function() {
+                const form = document.getElementById('addUserForm');
+                if (form.checkValidity()) {
+                    addNewUser();
+                    addUserModal.style.display = 'none';
+                    form.reset();
+                } else {
+                    form.reportValidity();
+                }
+            });
+
+            // Quick scan button
+            const quickScanBtn = document.getElementById('quickScanBtn');
+            quickScanBtn.addEventListener('click', function() {
+                showNotification('info', 'System Scan Initiated', 'Quick security scan has been started. This may take a few minutes.');
+                
+                // Simulate scan completion after 3 seconds
+                setTimeout(function() {
+                    showNotification('success', 'Scan Complete', 'System scan completed. No critical threats detected.');
+                }, 3000);
+            });
+
+            // Generate report button
+            const generateReportBtn = document.getElementById('generateReportBtn');
+            generateReportBtn.addEventListener('click', function() {
+                showNotification('info', 'Report Generation', 'Security report is being generated. You will be notified when it is ready.');
+                
+                // Simulate report generation after 2 seconds
+                setTimeout(function() {
+                    showNotification('success', 'Report Ready', 'Security report has been generated and is ready for download.');
+                }, 2000);
+            });
+        }
+
+        function loadUsers() {
+            const userGrid = document.getElementById('userGrid');
+            userGrid.innerHTML = '';
+            
+            users.forEach(user => {
+                const userCard = document.createElement('div');
+                userCard.className = 'user-card';
+                
+                const initials = user.name.split(' ').map(n => n[0]).join('');
+                
+                userCard.innerHTML = `
+                    <div class="user-header">
+                        <div class="user-avatar">${initials}</div>
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-role">${user.role}</div>
+                        </div>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-detail">
+                            <span class="detail-label">Email</span>
+                            <span class="detail-value">${user.email}</span>
+                        </div>
+                        <div class="user-detail">
+                            <span class="detail-label">Department</span>
+                            <span class="detail-value">${user.department}</span>
+                        </div>
+                        <div class="user-detail">
+                            <span class="detail-label">Status</span>
+                            <span class="detail-value ${user.status === 'Active' ? 'status-active' : 'status-inactive'}">${user.status}</span>
+                        </div>
+                        <div class="user-detail">
+                            <span class="detail-label">Last Login</span>
+                            <span class="detail-value">${user.lastLogin}</span>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                            <button class="cyber-btn btn-outline" style="flex: 1;" onclick="editUser(${user.id})">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="cyber-btn btn-danger" style="flex: 1;" onclick="deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                userGrid.appendChild(userCard);
+            });
+        }
+
+        function addNewUser() {
+            const fullName = document.getElementById('userFullName').value;
+            const email = document.getElementById('userEmail').value;
+            const department = document.getElementById('userDepartment').value;
+            const role = document.getElementById('userRole').value;
+            const securityLevel = document.getElementById('userSecurityLevel').value;
+            
+            const newUser = {
+                id: users.length + 1,
+                name: fullName,
+                email: email,
+                department: department,
+                role: role.charAt(0).toUpperCase() + role.slice(1),
+                status: "Active",
+                lastLogin: "Just now",
+                securityLevel: securityLevel.charAt(0).toUpperCase() + securityLevel.slice(1)
+            };
+            
+            users.push(newUser);
+            loadUsers();
+            
+            showNotification('success', 'User Added', `${fullName} has been added to the system.`);
+            
+            // Simulate AI threat detection for new user
+            setTimeout(() => {
+                if (Math.random() > 0.7) {
+                    showNotification('warning', 'Suspicious Activity', `AI detected unusual patterns for new user ${fullName}.`);
+                }
+            }, 2000);
+        }
+
+        function editUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                showNotification('info', 'Edit User', `Editing user: ${user.name}`);
+                // In a real application, you would open an edit modal here
+            }
+        }
+
+        function deleteUser(userId) {
+            const user = users.find(u => u.id === userId);
+            if (user) {
+                if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+                    const index = users.findIndex(u => u.id === userId);
+                    users.splice(index, 1);
+                    loadUsers();
+                    showNotification('success', 'User Deleted', `${user.name} has been removed from the system.`);
+                }
+            }
+        }
+
+        function handleFiles(files) {
+            const uploadedFiles = document.getElementById('uploadedFiles');
+            uploadedFiles.innerHTML = '';
+            
+            Array.from(files).forEach(file => {
+                const fileElement = document.createElement('div');
+                fileElement.style.display = 'flex';
+                fileElement.style.justifyContent = 'space-between';
+                fileElement.style.alignItems = 'center';
+                fileElement.style.padding = '1rem';
+                fileElement.style.background = 'rgba(30, 41, 59, 0.3)';
+                fileElement.style.borderRadius = '8px';
+                fileElement.style.marginBottom = '0.5rem';
+                
+                fileElement.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <i class="fas fa-file" style="color: var(--primary);"></i>
+                        <div>
+                            <div style="font-weight: 600;">${file.name}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">${(file.size / 1024).toFixed(2)} KB</div>
+                        </div>
+                    </div>
+                    <div class="loading-spinner" style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-spinner fa-spin" style="color: var(--primary);"></i>
+                        <span>Scanning...</span>
+                    </div>
+                `;
+                
+                uploadedFiles.appendChild(fileElement);
+                
+                // Simulate file scanning
+                setTimeout(() => {
+                    const isMalicious = Math.random() > 0.8;
+                    
+                    if (isMalicious) {
+                        fileElement.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <i class="fas fa-file" style="color: var(--danger);"></i>
+                                <div>
+                                    <div style="font-weight: 600;">${file.name}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${(file.size / 1024).toFixed(2)} KB</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="status-badge badge-critical">Threat Detected</span>
+                                <button class="cyber-btn btn-danger">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        
+                        showNotification('critical', 'Malicious File Detected', `AI identified potential threat in file: ${file.name}`);
+                    } else {
+                        fileElement.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <i class="fas fa-file" style="color: var(--success);"></i>
+                                <div>
+                                    <div style="font-weight: 600;">${file.name}</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">${(file.size / 1024).toFixed(2)} KB</div>
+                                </div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span class="status-badge badge-success">Clean</span>
+                                <button class="cyber-btn btn-success">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </div>
+                        `;
+                    }
+                }, 2000);
+            });
+            
+            showNotification('info', 'Files Uploaded', `${files.length} file(s) uploaded for security analysis.`);
+        }
+
+        function showNotification(level, title, message) {
+            const notificationContainer = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${level}`;
+            
+            let icon = 'fa-info-circle';
+            if (level === 'critical') icon = 'fa-exclamation-triangle';
+            if (level === 'success') icon = 'fa-check-circle';
+            if (level === 'warning') icon = 'fa-exclamation-circle';
+            
+            notification.innerHTML = `
+                <div class="notification-icon">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <button class="notification-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            
+            notificationContainer.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateX(100%)';
+                    setTimeout(() => {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, 5000);
+            
+            // Close button
+            notification.querySelector('.notification-close').addEventListener('click', function() {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            });
+        }
+
+        function simulateAIThreatDetection() {
+            // Simulate random security events
+            setInterval(() => {
+                const events = [
+                    {
+                        level: 'warning',
+                        title: 'Suspicious Login Attempt',
+                        message: 'Multiple failed login attempts detected for user jsmith@company.com from unusual location.'
+                    },
+                    {
+                        level: 'info',
+                        title: 'System Update Available',
+                        message: 'New security patches are available for your system. Update recommended.'
+                    },
+                    {
+                        level: 'critical',
+                        title: 'Potential Data Breach',
+                        message: 'AI detected unusual data access patterns. Immediate investigation recommended.'
+                    },
+                    {
+                        level: 'success',
+                        title: 'Threat Neutralized',
+                        message: 'Malicious process terminated successfully. System integrity maintained.'
+                    }
+                ];
+                
+                const event = events[Math.floor(Math.random() * events.length)];
+                
+                // Only show notification 30% of the time to avoid spam
+                if (Math.random() < 0.3) {
+                    showNotification(event.level, event.title, event.message);
+                }
+            }, 15000); // Check every 15 seconds
+        }
+    </script>
+</body>
+</html>

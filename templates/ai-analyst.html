@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Security Analyst - CyberSentinel</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #00ff88;
+      --primary-dark: #00cc6a;
+      --primary-glow: rgba(0, 255, 136, 0.3);
+      --secondary: #6366f1;
+      --accent: #f59e0b;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #00ff88;
+      --info: #3b82f6;
+      --bg: #0a0a0f;
+      --surface: #111827;
+      --surface-alt: #1e293b;
+      --surface-hover: #2d3748;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-code: #00ff88;
+      --border: #374151;
+      --border-glow: rgba(0, 255, 136, 0.5);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+      --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+      --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+      --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+      --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+      --nav-height: 4.5rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--gradient-bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background:
+          radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .dashboard-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Navigation */
+    .cyber-nav {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .cyber-nav.scrolled {
+      background: rgba(17, 24, 39, 0.98);
+      box-shadow: var(--shadow);
+    }
+
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .cyber-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+      position: relative;
+    }
+
+    .cyber-logo::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .cyber-logo:hover::after {
+      transform: scaleX(1);
+    }
+
+    .cyber-logo i {
+      font-size: 1.75rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-muted);
+      font-weight: 500;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      position: relative;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      background: var(--surface-hover);
+    }
+
+    .nav-link.active {
+      color: var(--primary);
+      background: rgba(0, 255, 136, 0.1);
+    }
+
+    .nav-link.active::before {
+      content: '>';
+      position: absolute;
+      left: -10px;
+      color: var(--primary);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* Page Header */
+    .page-header {
+      background: var(--surface);
+      padding: 2rem 0;
+      margin-top: var(--nav-height);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .page-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .page-title i {
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 2.2rem;
+    }
+
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    /* Main Content */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem 0;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Cards */
+    .cyber-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .cyber-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .card-header {
+      background: rgba(17, 24, 39, 0.8);
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Buttons */
+    .cyber-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #000;
+      box-shadow: var(--shadow-neon);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-outline {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: transparent;
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: #000;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.75rem;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    select.form-control[multiple] {
+      height: 120px;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    /* AI Report Styling */
+    .ai-report {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+
+    .report-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--primary);
+    }
+
+    .report-meta {
+      display: flex;
+      gap: 1rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .report-content {
+      line-height: 1.7;
+    }
+
+    .report-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .threat-level {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .threat-high {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    .threat-medium {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid var(--warning);
+      color: var(--warning);
+    }
+
+    .threat-low {
+      background: rgba(0, 255, 136, 0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+    }
+
+    .user-card {
+      background: var(--surface-alt);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--primary);
+    }
+
+    .user-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .user-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+    }
+
+    .detail-value {
+      font-weight: 500;
+    }
+
+    .recommendation-list {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .recommendation-item {
+      padding: 0.75rem;
+      margin-bottom: 0.5rem;
+      background: var(--surface-alt);
+      border-radius: 6px;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .recommendation-item i {
+      color: var(--primary);
+      margin-top: 0.25rem;
+    }
+
+    /* Loading Spinner */
+    .loading-spinner {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      color: var(--primary);
+    }
+
+    .loading-spinner i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Footer */
+    .cyber-footer {
+      background: rgba(17, 24, 39, 0.95);
+      border-top: 1px solid var(--border);
+      padding: 2rem 0;
+      margin-top: auto;
+    }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .footer-description {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .cyber-nav {
+        padding: 1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .page-title {
+        font-size: 1.8rem;
+      }
+
+      .page-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Notification System */
+    .notification-container {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      z-index: 1050;
+      max-width: 400px;
+    }
+
+    .notification {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      animation: slideIn 0.3s ease;
+    }
+
+    .notification-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .notification-success .notification-icon {
+      color: var(--success);
+    }
+
+    .notification-error .notification-icon {
+      color: var(--danger);
+    }
+
+    .notification-warning .notification-icon {
+      color: var(--warning);
+    }
+
+    .notification-info .notification-icon {
+      color: var(--info);
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .notification-message {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .notification-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    .loading-spinner i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-section,
+        .filter-section label,
+        .filter-section select,
+        .filter-section input {
+            color: #f5f5f5 !important;
+        }
+        /* Fix white dropdown background */
+        /* مهم جدا احنفظ به لا تحذفه */
+.form-label,.form-group option {
+    background-color: var(--surface);
+    color: var(--text);
+}
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Navigation -->
+    <nav class="cyber-nav" id="cyberNav">
+      <div class="nav-content">
+        <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+          <i class="fas fa-shield-alt"></i>
+          CyberSentinel
+        </a>
+
+        <div class="nav-links">
+          <a href="{{ url_for('admin.dashboard') }}" class="nav-link">
+            <i class="fas fa-tachometer-alt"></i>
+            Dashboard
+          </a>
+          <a href="{{ url_for('admin.employee_monitoring') }}" class="nav-link">
+            <i class="fas fa-user-shield"></i>
+            Employee Monitoring
+          </a>
+          <a href="{{ url_for('admin.ai_analyst') }}" class="nav-link active">
+            <i class="fas fa-brain"></i>
+            AI Security Analyst
+          </a>
+          <a href="{{ url_for('admin.alerts') }}" class="nav-link">
+            <i class="fas fa-bell"></i>
+            Alerts
+          </a>
+          <a href="{{ url_for('admin.reports') }}" class="nav-link">
+            <i class="fas fa-chart-bar"></i>
+            Reports
+          </a>
+        </div>
+
+        <div class="nav-actions">
+          <a href="{{ url_for('admin.profile') }}" class="cyber-btn btn-outline">
+            <i class="fas fa-user-circle"></i>
+            Profile
+          </a>
+          <a href="{{ url_for('auth.logout') }}" class="cyber-btn btn-outline">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div class="page-content">
+        <div>
+          <h1 class="page-title">
+            <i class="fas fa-brain"></i>
+            AI Security Analyst
+          </h1>
+          <p class="page-subtitle">
+            Request advanced insights from the CyberSentinel AI Engine
+          </p>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button class="cyber-btn btn-primary" id="quickAnalysisBtn">
+            <i class="fas fa-bolt"></i>
+            Quick Analysis
+          </button>
+          <button class="cyber-btn btn-outline" id="exportReportBtn">
+            <i class="fas fa-download"></i>
+            Export Report
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <div class="container">
+        <!-- Filter Form -->
+        <form method="POST" class="cyber-card" id="aiAnalysisForm">
+          <div class="card-header">
+            <div class="card-title">
+              <i class="fas fa-filter"></i>
+              Filter Parameters
+            </div>
+            <div style="color: var(--text-muted); font-size: 0.9rem;">
+              <i class="fas fa-info-circle"></i>
+              Select criteria for AI analysis
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="dashboard-grid">
+              <div class="form-group">
+                <label class="form-label">Select Users</label>
+                <select name="users" multiple class="form-control" id="usersSelect">
+                  <!-- Users will be populated from database -->
+                </select>
+                <small style="color: var(--text-muted);">Hold Ctrl to select multiple users</small>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">From Date</label>
+                <input type="date" name="start_date" class="form-control" id="startDate">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">To Date</label>
+                <input type="date" name="end_date" class="form-control" id="endDate">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Analysis Type</label>
+                <select name="analysis_type" class="form-control" id="analysisType">
+                  <option value="threat_detection">Threat Detection</option>
+                  <option value="behavior_analysis">Behavior Analysis</option>
+                  <option value="compliance_check">Compliance Check</option>
+                  <option value="risk_assessment">Risk Assessment</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+              <button type="submit" class="cyber-btn btn-primary">
+                <i class="fas fa-search"></i>
+                Analyze Selected
+              </button>
+              <button type="button" class="cyber-btn btn-outline" id="analyzeEntireSystem">
+                <i class="fas fa-globe"></i>
+                Analyze Entire System
+              </button>
+              <button type="reset" class="cyber-btn btn-outline" id="resetFilters">
+                <i class="fas fa-undo"></i>
+                Reset Filters
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Loading Spinner -->
+        <div class="loading-spinner" id="loadingSpinner">
+          <i class="fas fa-spinner fa-spin"></i>
+          <div>AI is analyzing your data...</div>
+        </div>
+
+        <!-- AI Report Display -->
+        <div class="ai-report" id="aiReport" style="display: none;">
+          <div class="report-header">
+            <div class="report-title">
+              <i class="fas fa-robot"></i>
+              AI Analysis Report
+            </div>
+            <div class="report-meta">
+              <span><i class="fas fa-calendar"></i> Generated: <span id="reportDate"></span></span>
+              <span><i class="fas fa-clock"></i> Analysis Time: <span id="analysisTime"></span></span>
+            </div>
+          </div>
+
+          <div class="report-content" id="reportContent">
+            <!-- Report content will be populated by JavaScript -->
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="cyber-footer">
+      <div class="footer-content">
+        <div class="footer-logo">
+          <i class="fas fa-shield-alt"></i>
+          CyberSentinel AI
+        </div>
+        <p class="footer-description">
+          © 2025 CyberSentinel AI Defense Platform | Advanced Threat Detection & Prevention System
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Initialize the dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDashboard();
+      loadUsersFromDatabase();
+      setupEventListeners();
+    });
+
+    function initializeDashboard() {
+      // Navbar scroll effect
+      window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('cyberNav');
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
+      });
+    }
+
+    async function fetchJson(url, options = {}) {
+      const response = await fetch(url, options);
+      const contentType = response.headers.get('content-type') || '';
+      let payload = null;
+      if (contentType.includes('application/json')) {
+        payload = await response.json().catch(() => null);
+      }
+      if (!response.ok) {
+        const message = (payload && payload.error) || response.statusText || `Request failed (${response.status})`;
+        throw new Error(message);
+      }
+      if (!payload) {
+        throw new Error('Unexpected response format received from the server.');
+      }
+      return payload;
+    }
+
+    function loadUsersFromDatabase() {
+      fetchJson('/admin/api/users')
+        .then(users => {
+          const usersSelect = document.getElementById('usersSelect');
+          usersSelect.innerHTML = '';
+          
+          users.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id;
+            option.textContent = user.full_name || user.username;
+            usersSelect.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading users:', error);
+          showNotification('error', 'Error', 'Failed to load users from database');
+        });
+    }
+
+    function setupEventListeners() {
+      // Analyze Entire System button
+      const analyzeEntireSystemBtn = document.getElementById('analyzeEntireSystem');
+      analyzeEntireSystemBtn.addEventListener('click', function() {
+        analyzeSystemData('entire_system');
+      });
+
+      // Quick Analysis button
+      const quickAnalysisBtn = document.getElementById('quickAnalysisBtn');
+      quickAnalysisBtn.addEventListener('click', function() {
+        // Set default values for quick analysis
+        document.getElementById('analysisType').value = 'threat_detection';
+        
+        // Set date range to last 7 days
+        const today = new Date();
+        const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+        
+        document.getElementById('startDate').value = lastWeek.toISOString().split('T')[0];
+        document.getElementById('endDate').value = today.toISOString().split('T')[0];
+        
+        // Trigger analysis with selected users
+        analyzeSystemData('quick_analysis');
+      });
+
+      // Export Report button
+      const exportReportBtn = document.getElementById('exportReportBtn');
+      exportReportBtn.addEventListener('click', function() {
+        exportReportToPDF();
+      });
+
+      // Reset Filters button
+      const resetFiltersBtn = document.getElementById('resetFilters');
+      resetFiltersBtn.addEventListener('click', function() {
+        document.getElementById('aiAnalysisForm').reset();
+        document.getElementById('usersSelect').selectedIndex = -1;
+      });
+
+      // Form submission
+      const aiAnalysisForm = document.getElementById('aiAnalysisForm');
+      aiAnalysisForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        analyzeSystemData('filtered_analysis');
+      });
+    }
+
+    async function analyzeSystemData(analysisType) {
+      const loadingSpinner = document.getElementById('loadingSpinner');
+      const aiReport = document.getElementById('aiReport');
+      
+      loadingSpinner.style.display = 'block';
+      aiReport.style.display = 'none';
+
+      // Prepare form data
+      const formData = new FormData(document.getElementById('aiAnalysisForm'));
+      const selectedUsers = Array.from(formData.getAll('users'));
+      const startDate = formData.get('start_date');
+      const endDate = formData.get('end_date');
+      const analysisTypeValue = formData.get('analysis_type');
+
+      // Prepare request data
+      const requestData = {
+        analysis_type: analysisType,
+        filters: {
+          users: selectedUsers,
+          start_date: startDate,
+          end_date: endDate,
+          analysis_type: analysisTypeValue
+        }
+      };
+
+      try {
+        const data = await fetchJson('/ai/analyze-system', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestData)
+        });
+
+        loadingSpinner.style.display = 'none';
+        
+        if (!data.success) {
+          throw new Error(data.error || 'Analysis failed');
+        }
+
+        displayAIReport(data.analysis_data, data.ai_insights);
+        showNotification('success', 'Analysis Complete', 'AI analysis completed successfully');
+      } catch (error) {
+        loadingSpinner.style.display = 'none';
+        console.error('Analysis error:', error);
+        showNotification('error', 'Analysis Failed', error.message);
+      }
+    }
+
+    function displayAIReport(analysisData, aiInsights) {
+      const aiReport = document.getElementById('aiReport');
+      const reportContent = document.getElementById('reportContent');
+      const reportDate = document.getElementById('reportDate');
+      const analysisTime = document.getElementById('analysisTime');
+      
+      // Set report metadata
+      const summaryText = typeof aiInsights === 'object' && aiInsights !== null
+        ? (aiInsights.summary || 'No AI insights available for the selected data.')
+        : (aiInsights || 'No AI insights available for the selected data.');
+      const generatedAt = typeof aiInsights === 'object' && aiInsights !== null && aiInsights.generated_at
+        ? new Date(aiInsights.generated_at).toLocaleString()
+        : new Date().toLocaleString();
+      reportDate.textContent = generatedAt;
+      analysisTime.textContent = analysisData?.activity_summary?.total_events
+        ? `${analysisData.activity_summary.total_events} events analysed`
+        : 'Analysis complete';
+
+      const overview = analysisData.system_overview || {};
+      const avgRiskScore = Number(overview.avg_risk_score ?? 0);
+
+      let contentHTML = `
+        <div class="report-section">
+          <h3 class="section-title"><i class="fas fa-chart-pie"></i> Executive Summary</h3>
+          <p>${summaryText}</p>
+        </div>
+        
+        <div class="report-section">
+          <h3 class="section-title"><i class="fas fa-server"></i> System Overview</h3>
+          <div class="user-details">
+            <div class="detail-item">
+              <span class="detail-label">Total Users:</span>
+              <span class="detail-value">${overview.total_users ?? 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Users with Alerts:</span>
+              <span class="detail-value">${overview.scoped_users ?? 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Total Alerts:</span>
+              <span class="detail-value">${overview.total_alerts ?? 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">High Risk Alerts:</span>
+              <span class="detail-value">${overview.high_risk_alerts ?? 0}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Average Risk Score:</span>
+              <span class="detail-value">${avgRiskScore.toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Add high-risk activities if available
+      if (analysisData.high_risk_activities && analysisData.high_risk_activities.length > 0) {
+        contentHTML += `
+          <div class="report-section">
+            <h3 class="section-title"><i class="fas fa-exclamation-triangle"></i> High-Risk Activities</h3>
+        `;
+        
+        analysisData.high_risk_activities.forEach(activity => {
+          const threatClass = activity.risk_score > 0.8 ? 'threat-high' : 
+                            activity.risk_score > 0.6 ? 'threat-medium' : 'threat-low';
+          
+          contentHTML += `
+            <div class="user-card">
+              <div class="user-header">
+                <div class="user-name">${activity.full_name}</div>
+                <span class="threat-level ${threatClass}">Risk: ${(activity.risk_score * 100).toFixed(0)}%</span>
+              </div>
+              <div class="user-details">
+                <div class="detail-item">
+                  <span class="detail-label">Event Type:</span>
+                  <span class="detail-value">${activity.event_type}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Source IP:</span>
+                  <span class="detail-value">${activity.source_ip}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Device:</span>
+                  <span class="detail-value">${activity.device}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Timestamp:</span>
+                  <span class="detail-value">${new Date(activity.timestamp).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        contentHTML += `</div>`;
+      }
+      
+      if (analysisData.top_events && analysisData.top_events.length > 0) {
+        contentHTML += `
+          <div class="report-section">
+            <h3 class="section-title"><i class="fas fa-wave-square"></i> Event Hotspots</h3>
+            <div class="user-details">
+        `;
+        analysisData.top_events.forEach(event => {
+          contentHTML += `
+            <div class="detail-item">
+              <span class="detail-label">${event.event_type || 'Unknown event'}:</span>
+              <span class="detail-value">${event.total} occurrences (avg risk ${(Number(event.average_risk || 0)).toFixed(2)})</span>
+            </div>
+          `;
+        });
+        contentHTML += `</div></div>`;
+      }
+
+      if (analysisData.top_users && analysisData.top_users.length > 0) {
+        contentHTML += `
+          <div class="report-section">
+            <h3 class="section-title"><i class="fas fa-user-shield"></i> Accounts Requiring Attention</h3>
+        `;
+        analysisData.top_users.forEach(user => {
+          contentHTML += `
+            <div class="user-card">
+              <div class="user-header">
+                <div class="user-name">${user.full_name || user.username || 'Unknown user'}</div>
+                <span class="threat-level threat-medium">${user.alert_count} alerts (${user.high_alerts} high)</span>
+              </div>
+              <div class="user-details">
+                <div class="detail-item">
+                  <span class="detail-label">Username:</span>
+                  <span class="detail-value">${user.username || '—'}</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Last Alert:</span>
+                  <span class="detail-value">${user.last_alert ? new Date(user.last_alert).toLocaleString() : 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        contentHTML += `</div>`;
+      }
+
+      // Add user statistics if available
+      if (analysisData.user_statistics && analysisData.user_statistics.length > 0) {
+        contentHTML += `
+          <div class="report-section">
+            <h3 class="section-title"><i class="fas fa-users"></i> Department Statistics</h3>
+            <div class="user-details">
+        `;
+        
+        analysisData.user_statistics.forEach(stat => {
+          contentHTML += `
+            <div class="detail-item">
+              <span class="detail-label">${stat.department}:</span>
+              <span class="detail-value">${stat.user_count} users, ${stat.alert_count} alerts</span>
+            </div>
+          `;
+        });
+        
+        contentHTML += `</div></div>`;
+      }
+      
+      // Add recommendations based on analysis
+      contentHTML += `
+        <div class="report-section">
+          <h3 class="section-title"><i class="fas fa-lightbulb"></i> Security Recommendations</h3>
+          <ul class="recommendation-list">
+            <li class="recommendation-item">
+              <i class="fas fa-shield-alt"></i>
+              <span>Implement enhanced monitoring for high-risk departments</span>
+            </li>
+            <li class="recommendation-item">
+              <i class="fas fa-user-lock"></i>
+              <span>Review and update access control policies</span>
+            </li>
+            <li class="recommendation-item">
+              <i class="fas fa-chart-line"></i>
+              <span>Conduct security awareness training for identified risk areas</span>
+            </li>
+            <li class="recommendation-item">
+              <i class="fas fa-search"></i>
+              <span>Schedule comprehensive security audit for next quarter</span>
+            </li>
+          </ul>
+        </div>
+      `;
+      
+      reportContent.innerHTML = contentHTML;
+      aiReport.style.display = 'block';
+      
+      // Scroll to report
+      aiReport.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function exportReportToPDF() {
+      const reportContent = document.getElementById('reportContent').innerText;
+      
+      if (!reportContent || reportContent.trim() === '') {
+        showNotification('warning', 'Export Failed', 'No report content to export');
+        return;
+      }
+
+      // Prepare data for PDF export
+      const exportData = {
+        report_content: reportContent,
+        report_title: 'AI Security Analysis Report',
+        generated_at: new Date().toISOString()
+      };
+
+      // Send export request to backend
+      fetch('/admin/ai-analyst/export-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(exportData)
+      })
+      .then(response => {
+        if (response.ok) {
+          return response.blob();
+        }
+        throw new Error('Export failed');
+      })
+      .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `ai-security-report-${new Date().toISOString().split('T')[0]}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showNotification('success', 'Export Successful', 'Report downloaded successfully');
+      })
+      .catch(error => {
+        console.error('Export error:', error);
+        showNotification('error', 'Export Failed', 'Failed to export report as PDF');
+      });
+    }
+
+    function showNotification(type, title, message) {
+      const notificationContainer = document.getElementById('notificationContainer');
+      
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      
+      let icon = 'fa-info-circle';
+      if (type === 'success') icon = 'fa-check-circle';
+      if (type === 'error') icon = 'fa-exclamation-circle';
+      if (type === 'warning') icon = 'fa-exclamation-triangle';
+      
+      notification.innerHTML = `
+        <div class="notification-icon">
+          <i class="fas ${icon}"></i>
+        </div>
+        <div class="notification-content">
+          <div class="notification-title">${title}</div>
+          <div class="notification-message">${message}</div>
+        </div>
+        <button class="notification-close">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      notificationContainer.appendChild(notification);
+      
+      // Auto remove after 5 seconds
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateX(100%)';
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.parentNode.removeChild(notification);
+            }
+          }, 300);
+        }
+      }, 5000);
+      
+      // Close button
+      notification.querySelector('.notification-close').addEventListener('click', function() {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+          if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+          }
+        }, 300);
+      });
+    }
+
+    // Utility function to format dates
+    function formatDate(dateString) {
+      if (!dateString) return 'Unknown';
+      const date = new Date(dateString);
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+    }
+
+    // Utility function to format file size
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSentinel AI - Command Center</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --border-glow: rgba(0, 255, 136, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .cyber-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .cyber-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .cyber-logo:hover::after {
+            transform: scaleX(1);
+        }
+
+        .cyber-logo i {
+            font-size: 1.75rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .nav-link.active::before {
+            content: '>';
+            position: absolute;
+            left: -10px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .cyber-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            background: var(--surface);
+            padding: 2rem 0;
+            margin-top: var(--nav-height);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .dashboard-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-title i {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Content */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .metric-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background-color: rgba(0, 255, 136, 0.1);
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            line-height: 1;
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-description {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Main Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .main-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .card-badge {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 20px;
+            color: var(--primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        /* Charts */
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Tables */
+        .table-container {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .cyber-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cyber-table th {
+            background: rgba(17, 24, 39, 0.8);
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .cyber-table td {
+            padding: 1.25rem 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .cyber-table tr:hover {
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .cyber-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .badge-high {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--danger);
+            color: var(--danger);
+        }
+
+        .badge-medium {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            color: var(--warning);
+        }
+
+        .badge-low {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        /* Timeline */
+        .timeline {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .timeline-item {
+            padding: 1.25rem 0;
+            border-left: 2px solid var(--primary);
+            padding-left: 1.5rem;
+            margin-left: 1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 1.5rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--primary);
+        }
+
+        .timeline-item:hover {
+            background: rgba(0, 255, 136, 0.05);
+            border-radius: 8px;
+            padding-left: 1.75rem;
+            margin-left: 0.75rem;
+        }
+
+        .timeline-time {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-content {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        /* User Avatar */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            background: var(--gradient);
+            font-size: 1rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 2px var(--surface);
+        }
+
+        /* Footer */
+        .cyber-footer {
+            background: rgba(17, 24, 39, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .ai-response-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            color: var(--text);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            white-space: normal;
+        }
+
+        .ai-response-content h3,
+        .ai-response-content h4 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .ai-response-content p {
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        .ai-response-content ul,
+        .ai-response-content ol {
+            margin: 0;
+            padding-left: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .ai-response-content li {
+            color: var(--text);
+        }
+
+        .ai-response-content li::marker {
+            color: var(--primary);
+        }
+
+        .ai-response-content strong {
+            color: var(--primary);
+        }
+
+        .ai-response-content code {
+            background: var(--surface-hover);
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary);
+        }
+
+        .ai-analyst-section {
+            margin-top: 2rem;
+        }
+
+        .ai-analyst-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
+            gap: 1.5rem;
+        }
+
+        .ai-panel {
+            background: rgba(17, 24, 39, 0.75);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .ai-panel h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--primary);
+            letter-spacing: 0.04em;
+        }
+
+        .ai-textarea {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            min-height: 140px;
+            resize: vertical;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ai-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.15);
+        }
+
+        .ai-quick-prompts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .ai-quick-prompt {
+            border: 1px solid rgba(0, 255, 136, 0.4);
+            background: transparent;
+            color: var(--text);
+            font-size: 0.8rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .ai-quick-prompt:hover {
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .ai-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .ai-send-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.8rem 1.6rem;
+            border-radius: 999px;
+            background: linear-gradient(125deg, var(--primary) 0%, var(--secondary) 100%);
+            box-shadow: 0 0 25px rgba(0, 255, 136, 0.25);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .ai-send-btn:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.35);
+        }
+
+        .ai-response-card {
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            padding-top: 1rem;
+        }
+
+        .ai-meta-panel .ai-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .ai-meta-pill {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        .ai-meta-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            padding: 0.65rem 0.75rem;
+            border-radius: 10px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ai-meta-stat span:first-child {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .ai-meta-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ai-analyst-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .dashboard-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cyber-container">
+        <!-- Navigation -->
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="{{ url_for('auth.root') }}" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel
+                </a>
+
+                <div class="nav-links">
+                    <a href="{{ url_for('admin.dashboard') }}" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('admin.employee_monitoring') }}" class="nav-link">
+                        <i class="fas fa-user-shield"></i>
+                        Employee Monitoring
+                    </a>
+                    <a href="{{ url_for('admin.ai_analyst') }}" class="nav-link">
+                        <i class="fas fa-brain"></i>
+                        AI Security Analyst
+                    </a>
+
+                    <a href="{{ url_for('admin.alerts') }}" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        Alerts
+                    </a>
+                    <a href="{{ url_for('admin.reports') }}" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Reports
+                    </a>
+                </div>
+
+                <div class="nav-actions">
+                    <!-- <button class="cyber-btn btn-outline">
+                        <i class="fas fa-moon"></i>
+                    </button> -->
+                    <a href="{{ url_for('admin.profile') }}" class="cyber-btn btn-outline">
+                        <i class="fas fa-user-circle"></i>
+                        Profile
+                    </a>
+                    <a href="{{ url_for('auth.logout') }}" class="cyber-btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Dashboard Header -->
+        <header class="dashboard-header">
+            <div class="dashboard-content">
+                <div>
+                    <h1 class="page-title">
+                        <i class="fas fa-rocket"></i>
+                        Command Center
+                    </h1>
+                    <p class="page-subtitle">
+                        Real-time threat monitoring &amp; AI-powered anomaly detection for {{ active_user.full_name or
+                        'Administrator' }}
+                    </p>
+                </div>
+                <button class="cyber-btn btn-primary" id="trainBtn">
+                    <i class="fas fa-robot"></i>
+                    Retrain AI Models
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <div class="container">
+                <!-- Metrics Grid -->
+                <section class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="metric-value">{{ metrics.total_alerts or 0 }}</div>
+                        <div class="metric-label">Total Alerts</div>
+                        <div class="metric-description">All time security incidents</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="metric-value" style="color: var(--warning);">{{ metrics.open_alerts or 0 }}</div>
+                        <div class="metric-label">Open Alerts</div>
+                        <div class="metric-description">Requiring immediate attention</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-skull-crossbones"></i>
+                        </div>
+                        <div class="metric-value" style="color: var(--danger);">{{ metrics.high_alerts or 0 }}</div>
+                        <div class="metric-label">High Severity</div>
+                        <div class="metric-description">Critical security threats</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="metric-value" style="color: var(--danger);">{{ metrics.critical_alerts or 0 }}</div>
+                        <div class="metric-label">Critical</div>
+                        <div class="metric-description">Require immediate action</div>
+                    </div>
+                </section>
+
+                <!-- Main Cards Grid -->
+                <section class="cards-grid">
+                    <!-- Activity Chart -->
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-chart-network"></i>
+                                Activity Distribution
+                            </div>
+                            <div class="card-badge">
+                                <i class="fas fa-sync-alt"></i>
+                                Live Updates
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Feed -->
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-broadcast-tower"></i>
+                                Live Feed
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                {% for item in alerts[:4] %}
+                                <div class="timeline-item">
+                                    <div class="timeline-time">{{ item.created_at }}</div>
+                                    <div class="timeline-content">
+                                        <i
+                                            class="fas fa-bolt {% if item.risk_level in ['high', 'critical'] %}text-danger{% else %}text-primary{% endif %}"></i>
+                                        {{ item.alert_type }} detected for {{ item.full_name or item.username or 'user'
+                                        }}
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="timeline-item">
+                                    <div class="timeline-time">—</div>
+                                    <div class="timeline-content">
+                                        No recent activity
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tables Grid -->
+                <section class="cards-grid">
+                    <!-- Threat Alerts -->
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-triangle-exclamation"></i>
+                                Threat Alerts
+                            </div>
+                            <div class="card-badge">{{ alerts|length }} Active</div> <!-- بدل 23 Active -->
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="table-container">
+                                <table class="cyber-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Type</th>
+                                            <th>User</th>
+                                            <th>Risk</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for alert in alerts %}
+                                        <tr>
+                                            <td><strong>#{{ alert.id }}</strong></td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <i
+                                                        class="fas fa-exclamation-triangle {% if alert.risk_level in ['high', 'critical'] %}text-danger{% elif alert.risk_level == 'medium' %}text-warning{% else %}text-success{% endif %}"></i>
+                                                    {{ alert.alert_type }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                    <div class="user-avatar">
+                                                        {{ (alert.full_name or alert.username or 'U')[0] }}
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 600;">{{ alert.full_name or
+                                                            alert.username or 'Unknown' }}</div>
+                                                        <small style="color: var(--text-muted);">@{{ alert.username or
+                                                            'user' }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            {% set risk = alert.risk_level %}
+                                            <td>
+                                                <span
+                                                    class="status-badge {% if risk == 'critical' %}badge-high{% elif risk == 'high' %}badge-high{% elif risk == 'medium' %}badge-medium{% else %}badge-low{% endif %}">
+                                                    {{ risk|upper }} ({{ '%.2f'|format(alert.risk_score or 0) }})
+                                                </span>
+                                            </td>
+                                            <td><small style="color: var(--text-muted);">{{ alert.created_at }}</small>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="5"
+                                                style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                                                No alerts to display.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Users -->
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-users"></i>
+                                Active Users
+                            </div>
+                            <div class="card-badge">{{ online_users }} Online</div> <!-- بدل 14 Online -->
+                        </div>
+                        <div class="card-body" style="padding: 0;">
+                            <div class="table-container">
+                                <table class="cyber-table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Department</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for u in users %}
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                                    <div class="user-avatar">
+                                                        {{ u.full_name[0] if u.full_name else 'U' }}
+                                                    </div>
+                                                    <div>
+                                                        <div style="font-weight: 600;">{{ u.full_name or u.username }}
+                                                        </div>
+                                                        <small style="color: var(--text-muted);">@{{ u.username
+                                                            }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span
+                                                    class="status-badge {% if u.role == 'admin' %}badge-high{% elif u.role == 'analyst' %}badge-medium{% else %}badge-low{% endif %}">
+                                                    {{ u.role|upper }}
+                                                </span>
+                                            </td>
+                                            <td>{{ u.department or 'N/A' }}</td>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                                    <div class="status-indicator"></div>
+                                                    <small style="color: var(--text-muted);">
+                                                        {{ 'Active' if u.is_active else 'Inactive' }}
+                                                    </small>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% else %}
+                                        <tr>
+                                            <td colspan="4"
+                                                style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                                                No users available.
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI System Status -->
+                <section style="margin-top: 2rem;">
+                    <div class="main-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fas fa-brain"></i>
+                                AI System Status
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="metrics-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 0;">
+                                <div class="metric-card" style="text-align: center;">
+                                    <div class="metric-value" style="color: var(--primary);">98.7%</div>
+                                    <div class="metric-label">Detection Accuracy</div>
+                                </div>
+                                <div class="metric-card" style="text-align: center;">
+                                    <div class="metric-value" style="color: var(--primary);">24/7</div>
+                                    <div class="metric-label">Uptime</div>
+                                </div>
+                                <div class="metric-card" style="text-align: center;">
+                                    <div class="metric-value" style="color: var(--primary);">0.2s</div>
+                                    <div class="metric-label">Avg Response</div>
+                                </div>
+                                <div class="metric-card" style="text-align: center;">
+                                    <div class="metric-value" style="color: var(--primary);">256</div>
+                                    <div class="metric-label">Features</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- AI Analyst Interaction -->
+                <section class="ai-analyst-section">
+                    <div class="main-card">
+                        <div class="card-header" style="justify-content: space-between;">
+                            <div class="card-title">
+                                <i class="fas fa-robot"></i>
+                                AI Security Analyst
+                            </div>
+                            <small style="color: var(--text-muted);">Request summaries, investigations, or reports</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="ai-analyst-grid">
+                                <div class="ai-panel ai-query-panel">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <div>
+                                            <h4>Ask CyberSentinel AI</h4>
+                                            <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Craft rapid intel, prioritization briefs, or escalation notes.</p>
+                                        </div>
+                                        <span class="ai-meta-pill">Realtime</span>
+                                    </div>
+                                    <form id="ai-interact-form" style="display:flex; flex-direction:column; gap:1rem;">
+                                        <textarea class="ai-textarea" id="aiPrompt" placeholder="E.g. Summarize today's critical alerts by department..." required></textarea>
+                                        <div class="ai-quick-prompts">
+                                            <button type="button" class="ai-quick-prompt" data-template="Summarize today's critical alerts by department and list required follow-up actions.">Critical summary</button>
+                                            <button type="button" class="ai-quick-prompt" data-template="Investigate insider risk for the top three users with high alerts and suggest mitigations.">Insider probe</button>
+                                            <button type="button" class="ai-quick-prompt" data-template="Draft a short briefing for leadership on SOC readiness over the last 24 hours.">Leadership brief</button>
+                                        </div>
+                                        <div class="ai-actions">
+                                            <button type="submit" class="btn btn-primary ai-send-btn" id="aiSubmitBtn">
+                                                <i class="fas fa-paper-plane"></i>
+                                                Send Request
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div class="ai-response-card results-container" id="ai-response-container" style="display: none;">
+                                        <div class="result-item">
+                                            <div class="result-info">
+                                                <div class="result-title">AI Response</div>
+                                                <div class="result-description ai-response-content" id="ai-response-text"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ai-panel ai-meta-panel">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <h4>Analyst Playbook</h4>
+                                        <span class="ai-meta-pill">Guidance</span>
+                                    </div>
+                                    <div class="ai-meta-grid">
+                                        <div class="ai-meta-stat">
+                                            <span>45s</span>
+                                            <small>Avg. response</small>
+                                        </div>
+                                        <div class="ai-meta-stat">
+                                            <span>99%</span>
+                                            <small>Confidence</small>
+                                        </div>
+                                        <div class="ai-meta-stat">
+                                            <span>24/7</span>
+                                            <small>Coverage</small>
+                                        </div>
+                                    </div>
+                                    <ul class="ai-meta-list">
+                                        <li>• Use concise prompts that specify scope, users, and timeline.</li>
+                                        <li>• Capture AI outputs in incident records when escalating.</li>
+                                        <li>• Pair AI summaries with human validation for critical cases.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="cyber-footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </div>
+                <p class="footer-description">
+                    © 2025 CyberSentinel AI Defense Platform | Advanced Threat Detection & Prevention System
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('cyberNav');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Train button functionality
+        document.getElementById('trainBtn').addEventListener('click', function () {
+            const originalHTML = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Training...';
+            this.disabled = true;
+
+            fetch('{{ url_for("ai.train_models") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ limit: 500 })
+            }).then(response => response.json())
+                .then(() => {
+                    this.innerHTML = '<i class="fas fa-check"></i> Models Updated';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.disabled = false;
+                    }, 3000);
+                }).catch(() => {
+                    this.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Retry';
+                    setTimeout(() => {
+                        this.innerHTML = originalHTML;
+                        this.disabled = false;
+                    }, 3000);
+                });
+        });
+
+        const activityStats = {{ activity_stats | tojson | safe }};
+
+        // Activity Chart
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const labels = activityStats.length ? activityStats.map(item => item.event_type || item.activity_type) : ['No Data'];
+        const values = activityStats.length ? activityStats.map(item => item.total || item.count || 0) : [1];
+        const activityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: [
+                        '#00ff88',
+                        '#6366f1',
+                        '#f59e0b',
+                        '#ef4444',
+                        '#8b5cf6',
+                        '#06b6d4'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: '#f8fafc',
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: '#111827',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#f8fafc',
+                        borderColor: '#374151',
+                        borderWidth: 1
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+
+        // Live data updates simulation
+        function updateLiveData() {
+            console.log('Updating live data...');
+        }
+
+        const aiForm = document.getElementById('ai-interact-form');
+        const aiPrompt = document.getElementById('aiPrompt');
+        const aiSubmitBtn = document.getElementById('aiSubmitBtn');
+        const aiResponseContainer = document.getElementById('ai-response-container');
+        const aiResponseText = document.getElementById('ai-response-text');
+        const quickPromptButtons = document.querySelectorAll('.ai-quick-prompt');
+
+        quickPromptButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (!aiPrompt) return;
+                aiPrompt.value = button.dataset.template || '';
+                aiPrompt.focus();
+            });
+        });
+
+        function formatAiResponse(markdown) {
+            if (!markdown) {
+                return '<p>No response generated.</p>';
+            }
+
+            const escapeHtml = (value) => value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+
+            const formatInline = (value) => escapeHtml(value)
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/g, '<code>$1</code>');
+
+            const lines = markdown.trim().split(/\r?\n/);
+            const html = [];
+            let inUnorderedList = false;
+            let inOrderedList = false;
+
+            const closeLists = () => {
+                if (inUnorderedList) {
+                    html.push('</ul>');
+                    inUnorderedList = false;
+                }
+                if (inOrderedList) {
+                    html.push('</ol>');
+                    inOrderedList = false;
+                }
+            };
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) {
+                    closeLists();
+                    continue;
+                }
+                if (/^###\s+/.test(trimmed)) {
+                    closeLists();
+                    html.push(`<h4>${formatInline(trimmed.replace(/^###\s+/, ''))}</h4>`);
+                    continue;
+                }
+                if (/^##\s+/.test(trimmed)) {
+                    closeLists();
+                    html.push(`<h3>${formatInline(trimmed.replace(/^##\s+/, ''))}</h3>`);
+                    continue;
+                }
+                if (/^\d+\.\s+/.test(trimmed)) {
+                    if (!inOrderedList) {
+                        closeLists();
+                        html.push('<ol>');
+                        inOrderedList = true;
+                    }
+                    html.push(`<li>${formatInline(trimmed.replace(/^\d+\.\s+/, ''))}</li>`);
+                    continue;
+                }
+                if (/^[-*]\s+/.test(trimmed)) {
+                    if (!inUnorderedList) {
+                        closeLists();
+                        html.push('<ul>');
+                        inUnorderedList = true;
+                    }
+                    html.push(`<li>${formatInline(trimmed.replace(/^[-*]\s+/, ''))}</li>`);
+                    continue;
+                }
+                closeLists();
+                html.push(`<p>${formatInline(trimmed)}</p>`);
+            }
+
+            closeLists();
+            return html.join('');
+        }
+
+        if (aiForm) {
+            aiForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                if (!aiPrompt.value.trim()) {
+                    return;
+                }
+                const original = aiSubmitBtn.innerHTML;
+                aiSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+                aiSubmitBtn.disabled = true;
+                aiResponseContainer.style.display = 'block';
+                aiResponseText.textContent = 'Processing request...';
+                try {
+                    const response = await fetch('{{ url_for("ai.interact_with_ai") }}', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ prompt: aiPrompt.value })
+                    });
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Request failed');
+                    }
+                    aiResponseText.innerHTML = formatAiResponse(data.response || '');
+                } catch (error) {
+                    console.error(error);
+                    aiResponseText.innerHTML = formatAiResponse('AI could not process the request. Please try again shortly.');
+                } finally {
+                    aiSubmitBtn.innerHTML = original;
+                    aiSubmitBtn.disabled = false;
+                }
+            });
+        }
+
+        setInterval(updateLiveData, 30000);
+    </script>
+</body>
+
+</html>

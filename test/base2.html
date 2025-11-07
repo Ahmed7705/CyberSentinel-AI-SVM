@@ -1,0 +1,1020 @@
+<!-- <!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberSentinel AI - Advanced Threat Detection</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-dark: #00cc6a;
+            --primary-glow: rgba(0, 255, 136, 0.3);
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --success: #00ff88;
+            --bg: #0a0a0f;
+            --surface: #111827;
+            --surface-alt: #1e293b;
+            --surface-hover: #2d3748;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-code: #00ff88;
+            --border: #374151;
+            --border-glow: rgba(0, 255, 136, 0.5);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.8);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+            --shadow-lg: 0 25px 50px rgba(0, 255, 136, 0.15);
+            --shadow-neon: 0 0 20px rgba(0, 255, 136, 0.5);
+            --gradient: linear-gradient(135deg, #00ff88 0%, #6366f1 100%);
+            --gradient-bg: linear-gradient(135deg, #0a0a0f 0%, #111827 50%, #1e293b 100%);
+            --nav-height: 4.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(245, 158, 11, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .cyber-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .cyber-nav {
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .cyber-nav.scrolled {
+            background: rgba(17, 24, 39, 0.98);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .cyber-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            position: relative;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            font-weight: 500;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: var(--nav-height);
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .dashboard-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            background: rgba(30, 41, 59, 0.5);
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-header i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Alert List */
+        .alert-list {
+            list-style: none;
+        }
+
+        .alert-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.3s ease;
+        }
+
+        .alert-item:hover {
+            background: var(--surface-hover);
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+
+        .alert-time {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .alert-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-low { background: rgba(0, 255, 136, 0.2); color: var(--success); }
+        .badge-medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .badge-high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .badge-critical { background: rgba(239, 68, 68, 0.4); color: #fff; }
+
+        /* Activity Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .activity-table th {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .activity-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .activity-table tr:hover {
+            background: var(--surface-hover);
+        }
+
+        .risk-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .risk-low { color: var(--success); }
+        .risk-medium { color: var(--warning); }
+        .risk-high { color: var(--danger); }
+        .risk-critical { color: var(--danger); font-weight: 800; }
+
+        /* Manual Detection Form */
+        .detection-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 0.9rem;
+        }
+
+        .form-control {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-glow);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-outline {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Results Section */
+        .results-container {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--surface);
+            border-radius: 6px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .result-info {
+            flex: 1;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .result-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .result-risk {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        .result-risk.low { background: rgba(0, 255, 136, 0.2); color: var(--success); }
+        .result-risk.medium { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .result-risk.high { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .result-risk.critical { background: rgba(239, 68, 68, 0.4); color: #fff; }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Flash Messages */
+        .flash-messages {
+            position: fixed;
+            top: 100px;
+            right: 2rem;
+            z-index: 1050;
+            max-width: 400px;
+        }
+
+        .flash-alert {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--primary);
+            animation: slideInRight 0.3s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Footer */
+        .cyber-footer {
+            background: rgba(17, 24, 39, 0.95);
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .cyber-nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .flash-messages {
+                right: 1rem;
+                left: 1rem;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cyber-container">
+        <!-- Navigation -->
+        <nav class="cyber-nav" id="cyberNav">
+            <div class="nav-content">
+                <a href="#" class="cyber-logo">
+                    <i class="fas fa-shield-alt"></i>
+                    CyberSentinel AI
+                </a>
+                
+                <div class="nav-links">
+                    <a href="#" class="nav-link active">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-bell"></i>
+                        Alerts
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        Settings
+                    </a>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <div style="font-weight: 600; color: var(--text);">Jordan Doe</div>
+                        <div style="font-size: 0.85rem;">Finance Department</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Flash Messages -->
+        <div class="flash-messages" id="flashMessages">
+            <!-- Flash messages will appear here -->
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Security Dashboard</h1>
+                <p class="dashboard-subtitle">Monitor and analyze security events in real-time</p>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Alert Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-shield"></i>
+                        My Alert Summary
+                    </div>
+                    <div class="card-body">
+                        <ul class="alert-list" id="alertList">
+                            <!-- Alerts will be populated by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Recent Activity -->
+                <div class="card">
+                    <div class="card-header" style="justify-content: space-between;">
+                        <span>
+                            <i class="fas fa-terminal"></i>
+                            Recent Activity
+                        </span>
+                        <small style="color: var(--text-muted);">Latest log entries</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table class="activity-table" id="activityTable">
+                                <thead>
+                                    <tr>
+                                        <th>Event</th>
+                                        <th>Timestamp</th>
+                                        <th>Source</th>
+                                        <th>Device</th>
+                                        <th>Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activityTableBody">
+                                    <!-- Activities will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual Detection Section -->
+            <section>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-robot"></i>
+                        Manual Detection
+                    </div>
+                    <div class="card-body">
+                        <form id="manual-detect-form" class="detection-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="eventType">Event Type</label>
+                                    <input class="form-control" id="eventType" name="event_type" placeholder="file_upload" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="sessionDuration">Session Duration (min)</label>
+                                    <input class="form-control" id="sessionDuration" name="session_duration" type="number" min="0" value="30">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="failedAttempts">Failed Attempts</label>
+                                    <input class="form-control" id="failedAttempts" name="failed_attempts" type="number" min="0" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="description">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="2" placeholder="Describe the activity"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-wave-square"></i>
+                                    Analyze
+                                </button>
+                            </div>
+                        </form>
+                        <div class="results-container" id="manual-detect-result" style="display: none;">
+                            <!-- Results will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="cyber-footer">
+            <div class="footer-content">
+                <p>&copy; 2025 CyberSentinel AI Defense Platform</p>
+                <p><small>Advanced Threat Detection & Prevention System</small></p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Real data from your database
+        const alertsData = [
+            {
+                alert_type: "Privilege Escalation",
+                created_at: "2025-01-07 21:04:00",
+                risk_level: "critical",
+                description: "Unscheduled admin role granted to Mila Robbins"
+            },
+            {
+                alert_type: "Mass Data Copy",
+                created_at: "2025-01-07 17:42:00",
+                risk_level: "high",
+                description: "Bailey King copied 85 files totalling 7MB"
+            },
+            {
+                alert_type: "Unusual Upload Volume",
+                created_at: "2025-01-07 20:10:00",
+                risk_level: "medium",
+                description: "Jordan Doe uploaded 8 files outside business hours"
+            },
+            {
+                alert_type: "Repeated Failed Logins",
+                created_at: "2025-01-07 18:06:00",
+                risk_level: "high",
+                description: "Lena Garcia had three consecutive failed attempts"
+            },
+            {
+                alert_type: "Large Download",
+                created_at: "2025-01-07 22:12:00",
+                risk_level: "high",
+                description: "Kai Wong downloaded 5MB of prototype data"
+            }
+        ];
+
+        const activitiesData = [
+            {
+                event_type: "login",
+                timestamp: "2025-01-08 07:45:00",
+                source_ip: "10.0.1.25",
+                device: "Windows-Desktop-FIN01",
+                risk_score: 0.10
+            },
+            {
+                event_type: "file_upload",
+                timestamp: "2025-01-07 19:55:00",
+                source_ip: "10.0.1.25",
+                device: "Windows-Desktop-FIN01",
+                risk_score: 0.33
+            },
+            {
+                event_type: "file_download",
+                timestamp: "2025-01-07 22:10:00",
+                source_ip: "10.0.3.44",
+                device: "MacBook-Pro-RD07",
+                risk_score: 0.42
+            },
+            {
+                event_type: "privilege_escalation",
+                timestamp: "2025-01-07 21:03:00",
+                source_ip: "10.0.5.12",
+                device: "ThinkPad-IT09",
+                risk_score: 0.82
+            },
+            {
+                event_type: "failed_login",
+                timestamp: "2025-01-07 18:05:00",
+                source_ip: "10.0.1.56",
+                device: "Dell-Latitude-FIN05",
+                risk_score: 0.60
+            },
+            {
+                event_type: "mass_copy",
+                timestamp: "2025-01-07 17:41:00",
+                source_ip: "10.0.4.77",
+                device: "MacBook-Pro-PD01",
+                risk_score: 0.88
+            }
+        ];
+
+        // Function to populate alerts
+        function populateAlerts() {
+            const alertList = document.getElementById('alertList');
+            
+            if (alertsData.length === 0) {
+                alertList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-shield-check"></i>
+                        <p>No alerts triggered for your account.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            alertList.innerHTML = alertsData.map(alert => `
+                <li class="alert-item">
+                    <div class="alert-content">
+                        <div class="alert-title">${alert.alert_type}</div>
+                        <div class="alert-time">${formatDateTime(alert.created_at)}</div>
+                        <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.25rem;">
+                            ${alert.description}
+                        </div>
+                    </div>
+                    <span class="alert-badge badge-${alert.risk_level}">${alert.risk_level}</span>
+                </li>
+            `).join('');
+        }
+
+        // Function to populate activities
+        function populateActivities() {
+            const activityTableBody = document.getElementById('activityTableBody');
+            
+            if (activitiesData.length === 0) {
+                activityTableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No activity recorded.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            activityTableBody.innerHTML = activitiesData.map(activity => {
+                const riskClass = getRiskClass(activity.risk_score);
+                return `
+                    <tr>
+                        <td class="text-capitalize">${activity.event_type.replace('_', ' ')}</td>
+                        <td>${formatDateTime(activity.timestamp)}</td>
+                        <td>${activity.source_ip}</td>
+                        <td>${activity.device}</td>
+                        <td class="risk-score ${riskClass}">${activity.risk_score.toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Helper function to format date time
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Helper function to determine risk class
+        function getRiskClass(riskScore) {
+            if (riskScore >= 0.8) return 'risk-critical';
+            if (riskScore >= 0.6) return 'risk-high';
+            if (riskScore >= 0.4) return 'risk-medium';
+            return 'risk-low';
+        }
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('cyberNav');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Manual detection form handler
+        document.getElementById('manual-detect-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('manual-detect-result');
+            const formData = new FormData(this);
+            
+            // Simulate AI analysis based on input data
+            const eventType = formData.get('event_type');
+            const sessionDuration = parseInt(formData.get('session_duration'));
+            const failedAttempts = parseInt(formData.get('failed_attempts'));
+            
+            // Calculate risk score based on inputs
+            let riskScore = 0.1; // Base risk
+            
+            // Adjust risk based on event type
+            if (eventType.includes('privilege') || eventType.includes('escalation')) riskScore += 0.4;
+            if (eventType.includes('mass') || eventType.includes('copy')) riskScore += 0.3;
+            if (eventType.includes('failed') || eventType.includes('login')) riskScore += 0.2;
+            
+            // Adjust risk based on session duration (longer sessions = higher risk)
+            riskScore += Math.min(sessionDuration / 300, 0.2);
+            
+            // Adjust risk based on failed attempts
+            riskScore += Math.min(failedAttempts * 0.1, 0.3);
+            
+            riskScore = Math.min(riskScore, 1.0);
+            
+            const riskLevel = riskScore >= 0.8 ? 'critical' : 
+                            riskScore >= 0.6 ? 'high' : 
+                            riskScore >= 0.4 ? 'medium' : 'low';
+            
+            // Display results
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <div class="result-item">
+                    <div class="result-info">
+                        <div class="result-title">AI Analysis Complete</div>
+                        <div class="result-description">
+                            Event: ${eventType} | 
+                            Session: ${sessionDuration}min | 
+                            Failed Attempts: ${failedAttempts}
+                        </div>
+                    </div>
+                    <div class="result-risk ${riskLevel}">
+                        ${riskLevel.toUpperCase()} RISK (${riskScore.toFixed(2)})
+                    </div>
+                </div>
+                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 255, 136, 0.1); border-radius: 6px; border-left: 4px solid var(--primary);">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">AI Recommendation:</div>
+                    <div style="color: var(--text-muted); font-size: 0.9rem;">
+                        ${getRecommendation(riskLevel, eventType)}
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to results
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Helper function to get AI recommendations
+        function getRecommendation(riskLevel, eventType) {
+            const recommendations = {
+                low: "No immediate action required. Monitor for pattern changes.",
+                medium: "Review activity details and consider additional verification.",
+                high: "Investigate immediately. Consider temporary access restrictions.",
+                critical: "Take immediate action. Isolate system and escalate to security team."
+            };
+            
+            let specificAdvice = "";
+            
+            if (eventType.includes('privilege')) {
+                specificAdvice = " Verify privilege change authorization and review access logs.";
+            } else if (eventType.includes('mass')) {
+                specificAdvice = " Check data classification and user authorization for bulk operations.";
+            } else if (eventType.includes('failed')) {
+                specificAdvice = " Review account security and consider password reset.";
+            }
+            
+            return recommendations[riskLevel] + specificAdvice;
+        }
+
+        // Flash message system
+        function showFlashMessage(message, type = 'info') {
+            const flashContainer = document.getElementById('flashMessages');
+            const alert = document.createElement('div');
+            alert.className = `flash-alert ${type}`;
+            alert.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div>
+                        <div style="font-weight: 600; margin-bottom: 0.25rem;">${type.toUpperCase()}</div>
+                        <div style="color: var(--text-muted);">${message}</div>
+                    </div>
+                    <button type="button" class="btn-close" onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 1.2rem;">
+                        &times;
+                    </button>
+                </div>
+            `;
+            
+            flashContainer.appendChild(alert);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize the dashboard with real data
+        document.addEventListener('DOMContentLoaded', function() {
+            populateAlerts();
+            populateActivities();
+            
+            // Show welcome message
+            setTimeout(() => {
+                showFlashMessage('Welcome to CyberSentinel AI Dashboard. System monitoring is active.', 'info');
+            }, 1000);
+            
+            // Simulate real-time updates
+            setInterval(() => {
+                // In a real application, this would fetch new data from the server
+                console.log('Checking for new alerts and activities...');
+            }, 30000); // Check every 30 seconds
+        });
+    </script>
+</body>
+</html> -->
